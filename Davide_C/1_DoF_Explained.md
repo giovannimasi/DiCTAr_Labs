@@ -4,8 +4,8 @@
 2. Analyse steady state requirements
 3. Analyse transient response requirements
 4. Choose what zero-pole we want to cancel
-     a. define Aplus, Aminus, Bplus, Bminus
-     b. compute degree of R, S and Am
+- define Aplus, Aminus, Bplus, Bminus
+- compute degree of R, S and Am
 6. Define controller poles and Am
 7. Define, if present, extra equation
 8. Build Adioph, Bdioph and Ms
