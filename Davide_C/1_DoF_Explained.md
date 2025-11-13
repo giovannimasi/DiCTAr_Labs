@@ -12,3 +12,8 @@
 9. Solve diophantine equation
 10. Build the controller
 11. Simulate and check results
+
+## Compute discrete time G
+In our exercise, G is given in continuous time, so, in order to realise our controller C, we must discretise it. We can easily do it thanks to Matlab function `c2d`.  
+The syntax is `C = c2d(Gcont, Ts, 'zoh')`; where Gcont is our plant in C.T., Ts is the sampling time and zoh is the zero order hold filter 
+> Note: you don't really care about zoh, is just the method used for the discretization. If you are more interested: [Matlab c2d](https://it.mathworks.com/help/ident/ref/dynamicsystem.c2d.html)
