@@ -83,3 +83,77 @@ Q and R is the engineering art of LQR design. It involves finding the ratio that
 | Faster Response / Better Regulation | Increase values in Q relative to R. | The resulting gain K increases, leading to a more aggressive controller and faster pole locations (closer to the origin in the z-plane). |
 | Increased Damping / Reduced Overshoot | Increase the penalty on the velocity/rate states (e.g., x-dot) within the Q matrix. | The controller reduces the use of energy that would induce excessive velocity, increasing the effective damping ratio (zeta). |
 | Reduced Control Effort / Lower Energy Use | Increase values in R relative to Q. | The resulting gain K decreases, leading to a more conservative controller. The system response slows down, and states may deviate more from zero. |
+
+## LQR with setpoint tracking
+A reference "input" can be included as shown:  
+PICTURE
+As seen in 1 DoF architecture, we are interested in limiting tracking error $e(k)$, that is the defined as $e(k) = y(k)-r(k)$.
+So, zero steady state tracking error $e_{inf}$ can be achieved by introducing the DT "integral" $q(k)$ of the tracking error $e(k)$ as an additional system state
+
+$$
+q(k+1) = q(k) + T_s(r(k)-y(k)) q(k) + T_se(k)
+$$
+
+What is the meaning of $q(k+1)$ if we divide by $T_s$? In the left hand side we obtain the incremental ratio (ie the derivative!). Since $q$ is the integral of $e$ => $e$ is the derivative of $q$!  
+We have a richer control architecture than on a side it's the same contribution already analysed and on the other side an extra blocks referred to tracking error.
+
+The state feedback control architecture is modified as shown below
+INSERT PHOTO 
+
+We'll see that in stability condition, the tracking error $e(k)$ is 0!
+
+Without loss of generality, we consider the SISO case. Let's consider the augmented state that includes the time integral of the tracking error: 
+
+$$
+X_{aug}(k) = 
+\begin{bmatrix}
+q(k) \\
+x(k)
+\end{bmatrix} \in \mathbb{R}^{n+1}, q(k) \in \mathbb{R}
+$$
+
+- The corresponding state equation is
+
+$$
+x_{aug}(k+1) = 
+\begin{bmatrix}
+q(k+1) \\
+x(k+1)
+\end{bmatrix} =
+\begin{bmatrix}
+1_{1 \times 1} & -T_s C \\
+0_{n \times 1} & A
+\end{bmatrix}
+\begin{bmatrix}
+q(k) \\
+x(k)
+\end{bmatrix} +
+\begin{bmatrix}
+0_{1 \times 1} \\
+B
+\end{bmatrix}
+u(k) +
+\begin{bmatrix}
+T_s \\
+0_{n \times 1}
+\end{bmatrix}
+r(k)
+$$
+
+$$
+y(k) = 
+\begin{bmatrix}
+0_{1 \times 1} & C \\
+\end{bmatrix}
+\begin{bmatrix}
+q(k) \\
+x(k)
+\end{bmatrix}
+$$
+
+The system guarantees zero steady state tracking error when $r(k)$ is constant
+
+In the presence of a constant signal $r(k)$. ...
+
+To simplify our analysis, let's introduce also this property:  
+if the couple $(A,B)$ is reachable, then also $(A_{aug},B_{aug})$ is reachable!
