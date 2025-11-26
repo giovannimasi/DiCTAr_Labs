@@ -43,4 +43,30 @@ Let's break it down step by step:
 - my objective is to compute the sequence $U(k) = [u(k) \\ \\ u(k+1) \\ \\ u(k+2)]$ &rarr; we express the function as a function of $U(k)$ and the initial state $x(k)$
 - (computation... &rarr; see slides for math passages)
 - so, we obtained a cost function $J$ that depends only on $x(k)$ and $U(k)$
-- 
+
+<!-- ![Description of the image](26_11_constrained.png) -->
+$$
+J(x(k), U(k)) = x^T(k)A^T \mathcal{LA}x(k) + 2x^T(k)A^T \mathcal{QBU}(k) + U^T(k)(B^T \mathcal{QB} + \mathcal{R})U(k)
+$$
+
+&rarr; and posing
+
+$$
+H = 2(B^T \mathcal{QB} + \mathcal{R})
+$$
+
+$$
+F = 2A^T \mathcal{QB}
+$$
+
+$$
+\overline{J} = x^T(k)A^T \mathcal{LA}x(k)
+$$
+
+&rarr; the cost function can be rewritten as:
+
+$$
+J(x(k), U(k)) = \frac{1}{2} U(k)^T HU(k) + x(k)^T FU(k) + \overline{J}
+$$
+
+&rarr; which is quadratic in $U(k)$ (notice that $H > 0$ is the Hessian matrix of the quadratic form).
