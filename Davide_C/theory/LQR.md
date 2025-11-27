@@ -45,7 +45,10 @@ The **Observability Matrix** ($M_O(A,C_q)$) must have full rank
 
 $$
 M_{O}(A,C_{q})=\begin{bmatrix}
-C_{q} \\ C_{q}A \\ \vdots \\ C_{q}A^{n-1}
+C_{q} \\ 
+C_{q}A \\ 
+\vdots \\ 
+C_{q}A^{n-1}
 \end{bmatrix}
 $$  
 
@@ -66,7 +69,7 @@ where $A$ and $B$ are the discrete state-space matrices, and $Q_D$ and $R_D$ are
 ### 4.2 The Discrete Algebraic Riccati Equation (DARE)
 The optimal gain $K_D$ depends on the matrix $P$ that solves the Discrete Algebraic Riccati Equation (DARE): 
 
-$$S = A^T P A - A^T P B (B^T P B + R_D)^{-1} B^T P A + Q_D$$
+$$P = A^T P A - A^T P B (B^T P B + R_D)^{-1} B^T P A + Q_D$$
 
 The **Optimal Gain $K_D$** is calculated as: 
 
@@ -86,7 +89,11 @@ Q and R is the engineering art of LQR design. It involves finding the ratio that
 
 ## LQR with setpoint tracking
 A reference "input" can be included as shown:  
-PICTURE
+
+  
+![input included](LQ_with_tracking.png)  
+
+  
 As seen in 1 DoF architecture, we are interested in limiting tracking error $e(k)$, that is the defined as $e(k) = y(k)-r(k)$.
 So, zero steady state tracking error $e_{inf}$ can be achieved by introducing the DT "integral" $q(k)$ of the tracking error $e(k)$ as an additional system state
 
@@ -94,13 +101,16 @@ $$
 q(k+1) = q(k) + T_s(r(k)-y(k)) q(k) + T_se(k)
 $$
 
-What is the meaning of $q(k+1)$ if we divide by $T_s$? In the left hand side we obtain the incremental ratio (ie the derivative!). Since $q$ is the integral of $e$ => $e$ is the derivative of $q$!  
+**What is the meaning of $q(k+1)$ if we divide by $T_s$?**  
+In the left hand side we obtain the incremental ratio (ie the derivative!). Since $q$ is the integral of $e$ $\Rightarrow$ $e$ is the derivative of $q$!  
 We have a richer control architecture than on a side it's the same contribution already analysed and on the other side an extra blocks referred to tracking error.
 
-The state feedback control architecture is modified as shown below
-INSERT PHOTO 
+The state feedback control architecture is modified as shown below  
 
-We'll see that in stability condition, the tracking error $e(k)$ is 0!
+![LQ final scheme](LQ_final_scheme.png)  
+
+
+**We'll see that in stability condition, the tracking error $e(k)$ is 0!**
 
 Without loss of generality, we consider the SISO case. Let's consider the augmented state that includes the time integral of the tracking error: 
 
@@ -112,8 +122,12 @@ x(k)
 \end{bmatrix} \in \mathbb{R}^{n+1}, q(k) \in \mathbb{R}
 $$
 
-- The corresponding state equation is
+&rarr; The corresponding state equation is:
 
+  ![LQ equation](LQ_equation.png)  
+
+  
+<!---
 $$
 x_{aug}(k+1) = 
 \begin{bmatrix}
@@ -150,10 +164,8 @@ q(k) \\
 x(k)
 \end{bmatrix}
 $$
-
-The system guarantees zero steady state tracking error when $r(k)$ is constant
-
-In the presence of a constant signal $r(k)$. ...
-
+--->
+***It can be proved that the system guarantees zero steady state tracking error when the reference signal r is constant!***  
+The design of the LQR control law with the integral state is performed using as system matrices $A_{aug}$ and $B_{aug}$.  
 To simplify our analysis, let's introduce also this property:  
-if the couple $(A,B)$ is reachable, then also $(A_{aug},B_{aug})$ is reachable!
+**if the couple $(A,B)$ is reachable, then also $(A_{aug},B_{aug})$ is reachable!**
