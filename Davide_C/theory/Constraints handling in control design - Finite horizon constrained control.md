@@ -28,9 +28,8 @@ However, an increase of the closed loop dominant time constant may cause a degra
 - **Tactical** &rarr; include constraints from the beginning, for example, Model Predictive Control
 
 ## Finite horizon constrained control
-We need both discrete time approach and optimal control. Because in discrete time we can handle the situation in **discrete time instant** and not in continuous time.  
-The starting point is considering discrete time, finite horizon, linear quadratic optimal control.  
-Let's break it down step by step:  
+We need both discrete time approach and optimal control. Because in discrete time we can handle the situation in **discrete time instant** (easier than in continuous time).  
+Let's consider discrete time, finite horizon, linear quadratic optimal control.   
 - first of all, we consider the solution in the absence of input constraints  
 - The discrete LTI system dynamics are represented by $x(k+1) = A x(k) + B u(k)$.  
   min_U(k) J(x(k), U(k)) = min_U(k) [∑_(i=0)^(H_p-1) xᵀ(k+i)Qx(k+i) + uᵀ(k+i)Ru(k+i) 
@@ -39,14 +38,14 @@ Let's break it down step by step:
   U(k) = [u(k) u(k+1) ... u(k+H_p-1)]
 
   $H_p \to$ time prediction horizon
-- In discrete time, the unconstrained optimal solution $U^*(k)$ can be easily computed through a finite dimensional quadratic optimization problem
-- my objective is to compute the sequence $U(k) = [u(k) \\ \\ u(k+1) \\ \\ u(k+2)]$ &rarr; we express the function as a function of $U(k)$ and the initial state $x(k)$
+- In discrete time, the unconstrained optimal solution $U^*(k)$ can be easily computed through a finite dimensional quadratic optimization problem (slides L08_15-21)
+- let's consider $H_p = 3$ &rarr; our aim is to compute the sequence $U(k) = [u(k) \\ \\ u(k+1) \\ \\ u(k+2)]$ &rarr; we express the function as a function of $U(k)$ and the initial state $x(k)$
 - (computation... &rarr; see slides for math passages)
-- so, we obtained a cost function $J$ that depends only on $x(k)$ and $U(k)$
+- as said, we obtained a cost function $J$ that depends only on $x(k)$ and $U(k)$
 
 <!-- ![Description of the image](26_11_constrained.png) -->
 $$
-J(x(k), U(k)) = x^T(k)A^T \mathcal{LA}x(k) + 2x^T(k)A^T \mathcal{QBU}(k) + U^T(k)(B^T \mathcal{QB} + \mathcal{R})U(k)
+J(x(k), U(k)) = x^T(k)A^T \mathcal{QA}x(k) + 2x^T(k)A^T \mathcal{QBU}(k) + U^T(k)(B^T \mathcal{QB} + \mathcal{R})U(k)
 $$
 
 &rarr; and posing
@@ -60,7 +59,7 @@ F = 2A^T \mathcal{QB}
 $$
 
 $$
-\overline{J} = x^T(k)A^T \mathcal{LA}x(k)
+\overline{J} = x^T(k)A^T \mathcal{QA}x(k)
 $$
 
 &rarr; the cost function can be rewritten as:
@@ -70,3 +69,30 @@ J(x(k), U(k)) = \frac{1}{2} U(k)^T HU(k) + x(k)^T FU(k) + \overline{J}
 $$
 
 &rarr; which is quadratic in $U(k)$ (notice that $H > 0$ is the Hessian matrix of the quadratic form).
+
+So, given the quadratic form of the cost function, the solution can be computed in closed form as
+
+$$
+U(k) = U^*(k) = - H^{-1}F^Tx(k)
+$$
+
+and in particular
+
+$$
+U^{\ast}(k) = \begin{bmatrix}
+u^{\ast}(k) \\ 
+u^{\ast}(k+1) \\ 
+u^{\ast}(k+2)
+\end{bmatrix}
+= - H^{-1}F^Tx(k)
+$$
+
+> [!NOTE]
+> 1. the control sequence above is defined only over the considered time horizon (i.e. for $k \in [0, H_p-1]$ and can't be extended to $k>H_p-1$ (in fact, in the
+>    considered example we have $H_p=3$))
+> 2. the optimal input at the generic time $k+i$ depends on the "$i^{th}$ step ahead prediction" $x(k+i)$ of the state obtained by using the state space model and starting from the "initial condition" $x(k)$
+
+> [!IMPORTANT]
+> So we obtained that the optimal input sequence depends only on the measured state $x(k)$ **and not** on the present state $x(k+i)$ 
+
+
