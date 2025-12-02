@@ -4,17 +4,21 @@ $$-u_M \leq u(t) \leq u_{M}, \, \forall t \geq 0$$
 $$\Rightarrow |u(t)| \leq u_{M}, \, \forall t \geq 0$$  
 The saturation constraint can be described as a _nonlinear static function_ of the control input as  
 
-m(t) = u(t)    if -u_M ≤ u(t) ≤ u_M  
-m(t) = -u_M    if u(t) < -u_M  
-m(t) = u_M     if u(t) > u_M  
+$$
+m(t) = 
+\begin{cases} 
+u(t), & \text{if } -u_M \leq u(t) \leq u_M \\
+-u_M, & \text{if } u(t) < -u_M \\
+u_M, & \text{if } u(t) > u_M
+\end{cases}
+$$
 
-m(t) → saturated input
+$m(t)$ → saturated input
 
-Note that, when -u_M ≤ u(t) ≤ u_M, m(t) = u(t)
+Note that, when $-u_M \leq u(t) \leq u_M \Rightarrow m(t) = u(t)$
 
 When the input saturation is active (i.e. when either $u(t) > u_M$ or $u(t) < - u_M$), the feedback control system is non-linear.  
-In the presence of saturation, control system work without feedback  
-Exceeding the input prescribed bounds leads to unexpected sysmet behaviours such as large overshoots, low performace, or, in the worst case, instability🙀
+In the presence of saturation, control system work without feedback  $\Rightarrow$ exceeding the input prescribed bounds leads to unexpected system behaviours such as large overshoots, low performace, or, in the worst case, **instability**🙀
 
 ### How we can handle this situation?
 Input saturation constraint cannot be handled directly by neither pole placement nor optimal control design procedures, but it must be checked _a posteriori_ through simulation.  
@@ -25,10 +29,10 @@ However, an increase of the closed loop dominant time constant may cause a degra
 - **Caution** &rarr; back off performance demands so constraints are met &rarr; slow down the controller
 - **Serendipitous** &rarr; allow occasional constraint violation (i.e. saturate the control input without modifying the original design) &rarr; used if the difference between input and saturation is small
 - **Evolutionary** &rarr; begin with a linear design and add embellishments, for example, anti-windup &rarr; build an additional structure to handle saturation
-- **Tactical** &rarr; include constraints from the beginning, for example, Model Predictive Control
+- **Tactical** &rarr; include constraints from the beginning, for example, ***Model Predictive Control***
 
 ## Finite horizon constrained control
-We need both discrete time approach and optimal control. Because in discrete time we can handle the situation in **discrete time instant** (easier than in continuous time).  
+We need both discrete time approach and optimal control, since in discrete time we can handle the situation in **discrete time instant** (easier than in continuous time).  
 Let's consider discrete time, finite horizon, linear quadratic optimal control.   
 - first of all, we consider the solution in the absence of input constraints  
 - The discrete LTI system dynamics are represented by $x(k+1) = A x(k) + B u(k)$.  
@@ -93,6 +97,6 @@ $$
 > 2. the optimal input at the generic time $k+i$ depends on the "$i^{th}$ step ahead prediction" $x(k+i)$ of the state obtained by using the state space model and starting from the "initial condition" $x(k)$
 
 > [!IMPORTANT]
-> So we obtained that the optimal input sequence depends only on the measured state $x(k)$ **and not** on the present state $x(k+i)$ 
+> We obtained that the optimal input sequence depends only on the measured state $x(k)$ **and not** on the present state $x(k+i)$ 
 
 
