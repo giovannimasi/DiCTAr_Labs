@@ -32,6 +32,7 @@ However, an increase of the closed loop dominant time constant may cause a degra
 - **Tactical** &rarr; include constraints from the beginning, for example, ***Model Predictive Control***
 
 ## Finite horizon constrained control
+### Analytic formulation without constraints (see ex1 in matlab) 
 We need both discrete time approach and optimal control, since in discrete time we can handle the situation in **discrete time instant** (easier than in continuous time).  
 Let's consider discrete time, finite horizon, linear quadratic optimal control.   
 - first of all, we consider the solution in the absence of input constraints  
@@ -44,35 +45,77 @@ Let's consider discrete time, finite horizon, linear quadratic optimal control.
   $H_p \to$ time prediction horizon
 - In discrete time, the unconstrained optimal solution $U^*(k)$ can be easily computed through a finite dimensional quadratic optimization problem (slides L08_15-21)
 - let's consider $H_p = 3$ &rarr; our aim is to compute the sequence $U(k) = [u(k) \\ \\ u(k+1) \\ \\ u(k+2)]$ &rarr; we express the function as a function of $U(k)$ and the initial state $x(k)$
-- (computation... &rarr; see slides for math passages)
-- as said, we obtained a cost function $J$ that depends only on $x(k)$ and $U(k)$
+> [!WARNING]
+> The computation of the cost function is omitted, see slides
+> 
+#### New matrices notation
+Before defining the cost function and find the optimal input $U^*(t)$, we need to define the new system matrices that we will use (remember that $H_p = 3$)
 
+$$
+\mathcal{A} = \begin{bmatrix}
+A \\ 
+A^2 \\ 
+A^3
+\end{bmatrix}
+$$
+
+$$
+\mathcal{B} = \begin{bmatrix}
+\quad B \quad  0_{px1} \quad 0_{px1} \\ 
+AB \quad  B \quad 0_{px1} \\
+A^2B \quad AB \quad B \\
+\end{bmatrix}
+$$
+$$
+\mathcal{Q} = \begin{bmatrix}
+\quad Q \quad \ 0_{nx1} \quad 0_{nx1} \\ 
+0_{nx1} \quad \ Q \quad 0_{nx1} \\
+0_{nx1} \quad 0_{nx1} \quad S \\
+\end{bmatrix}
+$$
+$$
+\mathcal{R} = \begin{bmatrix}
+\quad R \quad \ 0_{px1} \quad 0_{px1} \\ 
+0_{px1} \quad \ R \quad 0_{px1} \\
+0_{px1} \quad 0_{px1} \quad R \\
+\end{bmatrix}
+$$
+
+> [!CAUTION]
+> This matrices reported here refer to our example with $H_p = 3$! If $H_p \neq 3$ matrices dimensions are different!!!
 <!-- ![Description of the image](26_11_constrained.png) -->
+
+At this point, we are almost done. We now define our cost function $J$ as
+
 $$
-J(x(k), U(k)) = x^T(k)A^T \mathcal{QA}x(k) + 2x^T(k)A^T \mathcal{QBU}(k) + U^T(k)(B^T \mathcal{QB} + \mathcal{R})U(k)
+J(x(k), U(k)) = x^T(k)\mathcal{A}^T \mathcal{QA}x(k) + 2x^T(k)\mathcal{A}^T \mathcal{QB}U(k) + U^T(k)(\mathcal{B}^T \mathcal{QB} + \mathcal{R})U(k)
 $$
 
-&rarr; and posing
+And posing
 
 $$
 H = 2(B^T \mathcal{QB} + \mathcal{R})
 $$
 
 $$
-F = 2A^T \mathcal{QB}
+F = 2\mathcal{A}^T \mathcal{QB}
 $$
 
 $$
-\overline{J} = x^T(k)A^T \mathcal{QA}x(k)
+\overline{J} = x^T(k)\mathcal{A}^T \mathcal{QA}x(k)
 $$
 
-&rarr; the cost function can be rewritten as:
+The cost function can be rewritten as
 
 $$
 J(x(k), U(k)) = \frac{1}{2} U(k)^T HU(k) + x(k)^T FU(k) + \overline{J}
 $$
 
-&rarr; which is quadratic in $U(k)$ (notice that $H > 0$ is the Hessian matrix of the quadratic form).
+&rarr; which is quadratic in $U(k)$!
+
+> [!NOTE]
+> $H > 0$ is the Hessian matrix of the quadratic form $\Rightarrow$ it must be **symmetric and positive definite**. Why? Because we want a convex (local minimum =
+> global minimum) cost function $\Rightarrow$ it must be positive definite!
 
 So, given the quadratic form of the cost function, the solution can be computed in closed form as
 
@@ -94,9 +137,34 @@ $$
 > [!NOTE]
 > 1. the control sequence above is defined only over the considered time horizon (i.e. for $k \in [0, H_p-1]$ and can't be extended to $k>H_p-1$ (in fact, in the
 >    considered example we have $H_p=3$))
-> 2. the optimal input at the generic time $k+i$ depends on the "$i^{th}$ step ahead prediction" $x(k+i)$ of the state obtained by using the state space model and starting from the "initial condition" $x(k)$
+> 2. the optimal input at the generic time $k+i$ depends on the " $i^{th}$ step ahead prediction" $x(k+i)$ of the state obtained by using the state space model and starting from the "initial condition" $x(k)$
 
 > [!IMPORTANT]
-> We obtained that the optimal input sequence depends only on the measured state $x(k)$ **and not** on the present state $x(k+i)$ 
+> We obtained that the optimal input sequence depends only on the measured state $x(k)$ **and not** on the present state $x(k+i)$
+
+At this point we can easily compute ahead prediction of the state $X(k)$ as
+
+$$
+X(k) = \mathcal{A}x(k) + \mathcal{B}U(k)
+$$
+
+As previously said, $X(k)$ depends only on $x(k)$!
+
+### "Analytic" formulation with constraints (see ex2 in matlab)
+In this case, we will focus more on the intuitive understanding of the problem, instead of deriving analytic solution.  
+Our interest is including saturation constraints expressed as **linear inequalities**. As we can guess, we can have input saturation constraints, state saturation constraints or even both!  
+Let's recall that when we are speaking about saturation constraints, we are meaning that
+
+$$-u_{min} \leq u(k) \leq u_{max} \quad \forall k $$
+
+and the same for the state $x(k)$.  
+All linear inequalities are in $U(k)$ and can be recollected as follows:
+
+$$
+\\
+\\
+$$
+
+![Description of the image](inputAndStateConstraints.png)
 
 
