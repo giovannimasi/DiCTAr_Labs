@@ -167,4 +167,29 @@ $$
 
 ![Description of the image](inputAndStateConstraints.png)
 
+$$
+\\
+\\
+$$
+
+Now we can optimize the quadratic function in the presence of linear constraints (_quadratic programming_). In order to do this, we use Matlab function `quadprog()` that computes optimal input $U^*(k)$.
+
+>[!CAUTION]
+> $U^*(k)$ can be applied over the time horizon of length $H_p$ in open loop without any feedback.
+> This makes weak the application of such a constrained finite horizon optimal control strategy in the presence of disturbances, uncertainty and measurement errors.  
+> $\Rightarrow$ Feedback can be introduced by solving the considered constrained finite horizon optimal control at each time instant k by exploiting by the ***Receding Horizon (RH) principle***.
+
+## Receding Horizon principle
+The RH principle is defined by the recursive procedure below.  
+At sample instant k:
+- get the state $x(k) = x(k \lvert k)$
+- solve the considered QP optimization problem w.r.t. $U(k \lvert k)$
+- compute the minimizer $U^*(k \lvert k)$
+- apply, as present control action, $u(k) = u^* (k \lvert k)$
+- k&larr; k + 1 and repeat the procedure
+
+> [!NOTE]
+> If the model and the cost function are time invariant, the RH principle implicitly defines a nonlinear time invariant static state feedback control law of the form  $u(k) = \mathcal{K} (x(k)) $
+
+
 
