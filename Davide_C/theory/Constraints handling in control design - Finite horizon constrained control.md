@@ -113,7 +113,7 @@ $$
 
 &rarr; which is quadratic in $U(k)$!
 
-> [!NOTE]
+> [!IMPORTANT]
 > $H > 0$ is the Hessian matrix of the quadratic form $\Rightarrow$ it must be **symmetric and positive definite**. Why? Because we want a convex (local minimum =
 > global minimum) cost function $\Rightarrow$ it must be positive definite!
 
@@ -135,7 +135,7 @@ u^{\ast}(k+2)
 $$
 
 > [!NOTE]
-> 1. the control sequence above is defined only over the considered time horizon (i.e. for $k \in [0, H_p-1]$ and can't be extended to $k>H_p-1$ (in fact, in the
+> 1. the control sequence above is defined only over the considered time horizon (i.e. for $k \in [0, H_p-1]$ and **can't be extended** to $k>H_p-1$ (in fact, in the
 >    considered example we have $H_p=3$))
 > 2. the optimal input at the generic time $k+i$ depends on the " $i^{th}$ step ahead prediction" $x(k+i)$ of the state obtained by using the state space model and starting from the "initial condition" $x(k)$
 
@@ -174,6 +174,9 @@ $$
 
 Now we can optimize the quadratic function in the presence of linear constraints (_quadratic programming_). In order to do this, we use Matlab function `quadprog()` that computes optimal input $U^*(k)$.
 
+>[!NOTE]
+> We don't care about how does it work, we just need to define our matrices and our constraints. Matlab does the remaining part of the job. However, if you are really intersted in what Matlab does, check this: [Matlab-quadprog-docs](https://it.mathworks.com/help/optim/ug/quadprog.html) & 
+
 >[!CAUTION]
 > $U^*(k)$ can be applied over the time horizon of length $H_p$ in open loop without any feedback.
 > This makes weak the application of such a constrained finite horizon optimal control strategy in the presence of disturbances, uncertainty and measurement errors.  
@@ -189,7 +192,8 @@ At sample instant k:
 - k&larr; k + 1 and repeat the procedure
 
 > [!NOTE]
-> If the model and the cost function are time invariant, the RH principle implicitly defines a nonlinear time invariant static state feedback control law of the form  $u(k) = \mathcal{K} (x(k)) $
+> If the model and the cost function are time invariant, the RH principle implicitly defines a nonlinear time invariant static state feedback control law of the form  $u(k) = \mathcal{K} (x(k))$. However, the analytic expression of $mathcal{K} (x(k)) $ **can't be computed**.
+> It is possible to use RH principle also in finite horizon LQ unconstrained control, in order to obtain a feedback controller
 
 
 
