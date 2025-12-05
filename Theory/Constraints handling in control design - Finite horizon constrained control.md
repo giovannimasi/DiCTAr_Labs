@@ -83,7 +83,7 @@ $$
 
 > [!CAUTION]
 > This matrices reported here refer to our example with $H_p = 3$! If $H_p \neq 3$ matrices dimensions are different!!!
-<!-- ![Description of the image](26_11_constrained.png) -->
+<!-- ![Description of the image](fig/26_11_constrained.png) -->
 
 At this point, we are almost done. We now define our cost function $J$ as
 
@@ -165,7 +165,7 @@ $$
 \\
 $$
 
-![Description of the image](inputAndStateConstraints.png)
+![Description of the image](fig/inputAndStateConstraints.png)
 
 $$
 \\
