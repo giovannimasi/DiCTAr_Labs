@@ -91,7 +91,7 @@ Q and R is the engineering art of LQR design. It involves finding the ratio that
 A reference "input" can be included as shown:  
 
   
-![input included](LQ_with_tracking.png)  
+![input included](fig/LQ_with_tracking.png)  
 
   
 As seen in 1 DoF architecture, we are interested in limiting tracking error $e(k)$, that is the defined as $e(k) = y(k)-r(k)$.
@@ -107,7 +107,7 @@ We have a richer control architecture than on a side it's the same contribution 
 
 The state feedback control architecture is modified as shown below  
 
-![LQ final scheme](LQ_final_scheme.png)  
+![LQ final scheme](fig/LQ_final_scheme.png)  
 
 
 **We'll see that in stability condition, the tracking error $e(k)$ is 0!**
@@ -124,7 +124,7 @@ $$
 
 &rarr; The corresponding state equation is:
 
-  ![LQ equation](LQ_equation.png)  
+  ![LQ equation](fig/LQ_equation.png)  
 
   
 <!---
