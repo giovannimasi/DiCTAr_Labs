@@ -1,0 +1,40 @@
+name: Sync branches into main
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # tutti i giorni alle 02:00 UTC
+  workflow_dispatch:       # lancio manuale da GUI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # serve per poter pushare su main
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # serve la history completa per read-tree/merge
+
+      - name: Configura git
+        run: |
+          git config user.name "Sync Bot"
+          git config user.email "sync-bot@example.com"
+
+      - name: Sincronizza main con GiovanniBranch e DavideBranch
+        run: |
+          git checkout main
+
+          # Esempio con read-tree in sottocartelle (adatta i nomi)
+          git fetch origin
+
+          # Importa GiovanniBranch in main/Giovanni
+          git read-tree --prefix=Giovanni/ -u origin/GiovanniBranch
+
+          # Importa DavideBranch in main/Davide
+          git read-tree --prefix=Davide/ -u origin/DavideBranch
+
+          # Committa solo se ci sono cambiamenti
+          if ! git diff --quiet; then
+            git commit -m "Sync GiovanniBranch and DavideBranch into main"
+            git push origin main
+          fi
