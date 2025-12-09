@@ -23,18 +23,17 @@ jobs:
       - name: Sincronizza main con GiovanniBranch e DavideBranch
         run: |
           git checkout main
-
-          # Esempio con read-tree in sottocartelle (adatta i nomi)
-          git fetch origin
-
-          # Importa GiovanniBranch in main/Giovanni
+          
+          # Pulisci le cartelle
+          rm -rf Giovanni Davide
+          git add -A Giovanni Davide
+          
+          # Importa
           git read-tree --prefix=Giovanni/ -u origin/GiovanniBranch
-
-          # Importa DavideBranch in main/Davide
-          git read-tree --prefix=Davide/ -u origin/DavideBranch
-
-          # Committa solo se ci sono cambiamenti
-          if ! git diff --quiet; then
+          git read-tree --prefix=Davide/   -u origin/DavideBranch
+          
+          # Commit se ci sono cambiamenti
+          if ! git diff --cached --quiet; then
             git commit -m "Sync GiovanniBranch and DavideBranch into main"
             git push origin main
           fi
