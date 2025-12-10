@@ -10,7 +10,7 @@ Last one is useful is we have system delays or "inverse response". In this case,
 We can include output tracking, by adding in the cost function a quadratic term of the form  
 
 $$
-(y(k+i \mid k)-r(i))^T \\ Q_y \\ (y(k+i \mid k) - r(i))
+(y(k+i \mid k)-r(i))^T \ Q_y \ (y(k+i \mid k) - r(i))
 $$
 
 we can also include output constraints. These constraints are translated in linear inequalities of $U(k)$. 
@@ -34,4 +34,4 @@ and this is a discrete time integrator! The final system, with matrix model, opt
 ![MPC2](fig/MPC2.png)  
 
 ## MPCtools
-
+see live script on exercise folder
