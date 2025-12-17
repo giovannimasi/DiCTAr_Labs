@@ -19,8 +19,14 @@ We start our analysis from the continuous time LQR. Let's assume a static state 
 ### The Algebraic Riccati Equation (ARE) and Optimal Gain $K$ 
 The optimal solution $u(t)$ is given by $u(t) = -Kx(t)$.  
 The optimal gain $K$ is computed using the unique, positive definite solution $P$ to the Algebraic Riccati Equation (ARE).  
-***Algebraic Riccati Equation (ARE):*** $$Q - PBR^{-1}B^{T}P^{T} + PA + A^{T}P = 0$$  
-The **Optimal Gain $K$** is then calculated directly from $P$: $$K = R^{-1}B^{T}P \in \mathbb{R}^{p,n}$$  
+***Algebraic Riccati Equation (ARE):*** 
+$$
+Q - PBR^{-1}B^{T}P^{T} + PA + A^{T}P = 0
+$$  
+The **Optimal Gain $K$** is then calculated directly from $P$: 
+$$
+K = R^{-1}B^{T}P \in \mathbb{R}^{p,n}
+$$ 
 > 💡 **Intuition Check: The Role of P** : The matrix $P$ isn't just an arbitrary variable; it represents the minimum total cost remaining (or "cost-to-go") from the current time to infinity, given the current state $x(t)$. The calculation of $K$ naturally emerges from minimizing this cost.
 ## Existence, Stability, and Structural Prerequisites
 The stability and existence of the LQR solution depend critically on the underlying structural properties of the system matrices.
