@@ -56,7 +56,7 @@ The objective function $J_N$ comprises two distinct components:
    - **Terminal Cost $V_f(x)$**: A penalty term applied to the final state of the prediction horizon. This term is crucial for approximating the "tail" of the infinite horizon cost that is neglected by the truncation to $N$ steps.
    - **Terminal Set $\mathbb{X}_f$**: A specific subset of the state space where the system must land at the end of the prediction horizon. This constraint ensures that the system is in a "safe" or "stabilizable" configuration at step $N$.
   
-The solution to $\mathcal{P}_N(x(k))$ is the optimal control sequence $\mathbf{u}^* = \{u^*(0|k), \dots, u^*(N-1|k)\}$. The control input applied to the plant is $u(k) = u^*(0|k)$.
+The solution to $\mathcal{P}_N(x(k))$ is the optimal control sequence $\mathbf{u}^* = \{u^*(0|k), \dots, u^*(N-1|k)\}$ . The control input applied to the plant is $u(k) = u^*(0|k)$.
 ### 2.3 Definitions of Invariance and Stability
 The analysis of MPC relies heavily on set-theoretic concepts, particularly invariance.
 - **Positively Invariant Set**: A set $\Omega \subset \mathbb{R}^n$ is positively invariant for the closed-loop system $x(k+1) = f_{cl}(x(k))$ if for all $x(0) \in \Omega$, the trajectory $x(k)$ remains in $\Omega$ for all $k \ge 0$.
@@ -65,7 +65,7 @@ The analysis of MPC relies heavily on set-theoretic concepts, particularly invar
 
 ## 3. Feasibility Analysis: The Prerequisite for Control
 Before stability can be addressed, the controller must be feasible. If the optimization problem $\mathcal{P}_N(x(k))$ has no solution, the controller effectively fails; it cannot generate a control signal that respects the physical limits of the system. This failure mode is unique to constrained optimal control and requires rigorous analysis.
-### 3.1 Initial vs. Recursive Feasibility
+### 3.1 Initial vs. Recursive Feasibility
 We distinguish between feasibility at the initial time and feasibility at all future times. 
 - **Initial Feasibility**: The initial state $x(0)$ must belong to the set of states $\mathcal{X}_N$ from which the terminal set $\mathbb{X}_f$ is reachable in $N$ steps. This set is formally defined as the $N$-step controllable set to $\mathbb{X}_f$.
 - **Recursive Feasibility**: This property guarantees that if the problem is feasible at time $k$ (i.e., a valid trajectory exists), then the problem will necessarily be feasible at time $k+1$ under the applied control law. Without this guarantee, a system might start in a valid state but evolve into a state where no solution exists—a "dead end" in the state space.
