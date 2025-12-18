@@ -17,7 +17,7 @@ u = 2*z/(z-1); % input
 %   sometimes there are common factors at numerator and den (that have to be
 %   cancelled) (minreal performs this job under a tolerance, that is needed
 %   to the algorithm to understand when it can consider equal two factors)
-%   2. zpk -> since we want to do a partial fraction expression, we need to
+%   2. zpk -> since we want to do a partial fraction expansion, we need to
 %   identify which are the roots at the denominator that make the single
 %   terms -> I have to factorize the denominator
 
