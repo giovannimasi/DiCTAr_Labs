@@ -1,15 +1,16 @@
 <script>
-  MathJax = {
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']], // Abilita il $ singolo
-      displayMath: [['$$', '$$'], ['\\[', '\\]']], // Abilita il $$ doppio
-      processEscapes: true // Permette di usare \$ per scrivere il simbolo del dollaro
-    },
-    svg: {
-      fontCache: 'global'
-    }
-  };
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'ams' // Abilita la numerazione automatica delle equazioni
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
 </script>
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
