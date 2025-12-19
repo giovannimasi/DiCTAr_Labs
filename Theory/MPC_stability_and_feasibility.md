@@ -14,7 +14,7 @@ Model Predictive Control (MPC), historically referred to as Receding Horizon Con
  Consequently, the horizon is truncated to a finite integer $N$. This truncation severs the inherent link to closed-loop stability provided by the Bellman equation in infinite-horizon settings. An MPC controller might successfully plan a trajectory that minimizes cost over the next $N$ steps, yet fail to ensure stability or even feasibility at step $N+1$, potentially driving the system into a "blind alley" from which recovery is impossible. This report provides an exhaustive analysis of the theoretical mechanisms developed to bridge this gap. We explore the dual pillars of MPC theory: **Recursive Feasibility** and **Asymptotic Stability**. Drawing upon foundational lecture notes, seminal texts, and contemporary research, we dissect the mathematical architectures—such as terminal costs, invariant sets, and contractive constraints—that transform MPC from a heuristic strategy into a rigorous control methodology. Furthermore, we examine practical extensions for robust operation under uncertainty, including soft constraints, feasibility governors, and tube-based methods, ensuring the analysis remains grounded in the realities of engineering implementation.
 
  ### 1.1 The Operational Principle and the Feedback Gap
- The operation of MPC is defined by the Receding Horizon (RH) principle. At a specific time instant $k$, the controller measures the system state $x(k)$ and solves an open-loop optimization problem to find an optimal input sequence $\mathbf{u}^* = \{u^* (k \vert k), u^* (k+1 \vert k), \dots, u^*(k+N-1 \vert k)\}$. Critically, only the first element of this sequence, $u^*(k|k)$, is applied to the plant. At the next time step $k+1$, the horizon shifts forward, and the optimization is repeated with fresh state data. This process implicitly defines a n**onlinear state feedback law** $u(k) = \kappa_{MPC}(x(k))$. The central challenge in stability analysis is that this feedback law is not available in closed form; it is the implicit result of a numerical optimization. Therefore, proving that the closed-loop system $x(k+1) = f(x(k), \kappa_{MPC}(x(k)))$ is stable requires demonstrating that the optimization procedure itself possesses properties analogous to a Lyapunov function. If the optimization problem is not carefully formulated—specifically regarding what happens at the end of the prediction horizon—the "greedy" nature of the finite-horizon controller can lead to instability, where the controller aggressively reduces short-term cost at the expense of long-term convergence.  
+ The operation of MPC is defined by the Receding Horizon (RH) principle. At a specific time instant $k$, the controller measures the system state $x(k)$ and solves an open-loop optimization problem to find an optimal input sequence $u^\* = \{u^\* (k \vert k), u^\* (k+1 \vert k), \dots, u^\*(k+N-1 \vert k)\}$. Critically, only the first element of this sequence, $u^*(k|k)$, is applied to the plant. At the next time step $k+1$, the horizon shifts forward, and the optimization is repeated with fresh state data. This process implicitly defines a n**onlinear state feedback law** $u(k) = \kappa_{MPC}(x(k))$. The central challenge in stability analysis is that this feedback law is not available in closed form; it is the implicit result of a numerical optimization. Therefore, proving that the closed-loop system $x(k+1) = f(x(k), \kappa_{MPC}(x(k)))$ is stable requires demonstrating that the optimization procedure itself possesses properties analogous to a Lyapunov function. If the optimization problem is not carefully formulated—specifically regarding what happens at the end of the prediction horizon—the "greedy" nature of the finite-horizon controller can lead to instability, where the controller aggressively reduces short-term cost at the expense of long-term convergence.  
  ### 1.2 The Two Fundamental Questions
  The theoretical validation of any MPC scheme rests on answering two coupled questions  
  1. **Feasibility**: Is the finite horizon optimization problem solvable at every point in the state space? More specifically, does the existence of a solution at time $k=0$ guarantee the existence of a solution at all future times $k > 0$? 
@@ -34,15 +34,17 @@ $$
 where $x(k) \in \mathbb{R}^n$ represents the system state and $u(k) \in \mathbb{R}^m$ represents the control input at time step $k$. The function $f: \mathbb{R}^n \times \mathbb{R}^m \to \mathbb{R}^n$ describes the plant dynamics, which may be linear ($Ax+Bu$) or nonlinear. The system is subject to hard pointwise constraints on states and inputs, defined by the sets $\mathbb{X}$ and $\mathbb{U}$:  
 
 $$
-u(k) \in \mathbb{U} \subset \mathbb{R}^m$$
-$$x(k) \in \mathbb{X} \subset \mathbb{R}^n
+u(k) \in \mathbb{U} \subset \mathbb{R}^m
+$$
+$$
+x(k) \in \mathbb{X} \subset \mathbb{R}^n
 $$
 
 Typically, $\mathbb{U}$ is a compact, convex polytope containing the origin (representing actuator saturation limits), and $\mathbb{X}$ is a closed, convex set representing safety limits or physical boundaries.
 ### 2.2 The Finite Horizon Optimal Control Problem (FHOCP)
 At each sampling instant $k$, given the current state $x(k)$, the MPC controller solves the following constrained optimization problem, denoted as $\mathcal{P}_N(x(k))$:  
 
-$$\min_{\mathbf{u}} J_N(x(k), \mathbf{u}) = V_f(x(k+N|k)) + \sum_{i=0}^{N-1} \ell(x(k+i|k), u(k+i|k))
+$$\min_{\mathbf{u}} J_N(x(k), \mathbf{u}) = V_f(x(k+N|k)) + \sum\_{i=0}^{N-1} \ell(x(k+i|k), u(k+i|k))
 $$
 
 Subject to:
@@ -56,7 +58,7 @@ The objective function $J_N$ comprises two distinct components:
    - **Terminal Cost $V_f(x)$**: A penalty term applied to the final state of the prediction horizon. This term is crucial for approximating the "tail" of the infinite horizon cost that is neglected by the truncation to $N$ steps.
    - **Terminal Set $\mathbb{X}_f$**: A specific subset of the state space where the system must land at the end of the prediction horizon. This constraint ensures that the system is in a "safe" or "stabilizable" configuration at step $N$.
   
-The solution to $\mathcal{P}_N(x(k))$ is the optimal control sequence $\mathbf{u}^* = \{u^*(0|k), \dots, u^*(N-1|k)\}$ . The control input applied to the plant is $u(k) = u^*(0|k)$.
+The solution to $\mathcal{P}_N(x(k))$ is the optimal control sequence $\mathbf{u}^\* = \{u^\*(0|k), \dots, u^\*(N-1|k)\}$ . The control input applied to the plant is $u(k) = u^*(0|k)$.
 ### 2.3 Definitions of Invariance and Stability
 The analysis of MPC relies heavily on set-theoretic concepts, particularly invariance.
 - **Positively Invariant Set**: A set $\Omega \subset \mathbb{R}^n$ is positively invariant for the closed-loop system $x(k+1) = f_{cl}(x(k))$ if for all $x(0) \in \Omega$, the trajectory $x(k)$ remains in $\Omega$ for all $k \ge 0$.
@@ -65,55 +67,72 @@ The analysis of MPC relies heavily on set-theoretic concepts, particularly invar
 
 ## 3. Feasibility Analysis: The Prerequisite for Control
 Before stability can be addressed, the controller must be feasible. If the optimization problem $\mathcal{P}_N(x(k))$ has no solution, the controller effectively fails; it cannot generate a control signal that respects the physical limits of the system. This failure mode is unique to constrained optimal control and requires rigorous analysis.
-### 3.1 Initial vs. Recursive Feasibility
+
+### 3.1 Initial vs. Recursive Feasibility
 We distinguish between feasibility at the initial time and feasibility at all future times. 
 - **Initial Feasibility**: The initial state $x(0)$ must belong to the set of states $\mathcal{X}_N$ from which the terminal set $\mathbb{X}_f$ is reachable in $N$ steps. This set is formally defined as the $N$-step controllable set to $\mathbb{X}_f$.
 - **Recursive Feasibility**: This property guarantees that if the problem is feasible at time $k$ (i.e., a valid trajectory exists), then the problem will necessarily be feasible at time $k+1$ under the applied control law. Without this guarantee, a system might start in a valid state but evolve into a state where no solution exists—a "dead end" in the state space.
 ### 3.2 The Mechanism of Recursive Feasibility: The Shifted Sequence 
 The standard mathematical proof for recursive feasibility relies on the construction of a candidate solution for the next time step based on the solution from the current step. This is often referred to as the "shifting argument." Let the optimal input sequence at time $k$ be:  
+
 $$
-\mathbf{u}^*(k) = \{ u^*(k|k), u^*(k+1|k), \dots, u^*(k+N-1|k) \}
+\mathbf{u}^\*(k) = \{ u^\*(k|k), u^\*(k+1|k), \dots, u^\*(k+N-1|k) \}
 $$
+
 This sequence generates a feasible state trajectory:
+
 $$
-\mathbf{x}^*(k) = \{ x(k|k), x(k+1|k), \dots, x(k+N|k) \}
+\mathbf{x}^\*(k) = \{ x(k|k), x(k+1|k), \dots, x(k+N|k) \}
 $$
+
 where, by the terminal constraint, $x(k+N|k) \in \mathbb{X}_f$.At time $k+1$, the state of the system becomes $x(k+1) = x(k+1|k)$ (assuming no model mismatch). We need to find a sequence of $N$ inputs starting from $k+1$.We can reuse the remaining tail of the previous optimal sequence:
+
 $$
-\{ u^*(k+1|k), \dots, u^*(k+N-1|k) \}
+\{ u^\*(k+1|k), \dots, u^\*(k+N-1|k) \}
 $$
-This covers the first $N-1$ steps of the new horizon. However, we are missing the input for the final step, $u(k+N|k+1)$.The state reached by the reused sequence is $x(k+N|k)$, which we know is inside the terminal set $\mathbb{X}_f$.To ensure feasibility, we require that the terminal set $\mathbb{X}_f$ is a Control Invariant Set. This means there exists a local control law (or simply a valid input) $\kappa_f(x)$ such that for any $x \in \mathbb{X}_f$, $f(x, \kappa_f(x)) \in \mathbb{X}_f$ and $\kappa_f(x) \in \mathbb{U}$.Thus, we construct the candidate sequence $\tilde{\mathbf{u}}(k+1)$:
+
+This covers the first $N-1$ steps of the new horizon. However, we are missing the input for the final step, $u(k+N|k+1)$.The state reached by the reused sequence is $x(k+N|k)$, which we know is inside the terminal set $\mathbb{X}\_f$.To ensure feasibility, we require that the terminal set $\mathbb{X}\_f$ is a Control Invariant Set. This means there exists a local control law (or simply a valid input) $\kappa\_f(x)$ such that for any $x \in \mathbb{X}\_f$, $f(x, \kappa\_f(x)) \in \mathbb{X}\_f$ and $\kappa\_f(x) \in \mathbb{U}$.Thus, we construct the candidate sequence $\tilde{\mathbf{u}}(k+1)$:
+
 $$
-\tilde{\mathbf{u}}(k+1) = \{ u^*(k+1|k), \dots, u^*(k+N-1|k), \kappa_f(x(k+N|k)) \}
+\tilde{\mathbf{u}}(k+1) = \{ u^\*(k+1|k), \dots, u^\*(k+N-1|k), \kappa\_f(x(k+N|k)) \}
 $$
-Because the first $N-1$ parts are feasible (from the previous step) and the final step is feasible (by the invariance of $\mathbb{X}_f$), the entire sequence is a valid solution to $\mathcal{P}_N(x(k+1))$. The existence of a feasible solution implies that an optimal solution exists. Thus, feasibility is preserved recursively.
+
+Because the first $N-1$ parts are feasible (from the previous step) and the final step is feasible (by the invariance of $\mathbb{X}\_f$), the entire sequence is a valid solution to $\mathcal{P}\_N(x(k+1))$. The existence of a feasible solution implies that an optimal solution exists. Thus, feasibility is preserved recursively.
 ### 3.3 The "Determinedness Index" and Horizon Length
-While terminal constraints guarantee feasibility, they can be conservative. If the prediction horizon $N$ is short, the set of states that can reach the terminal set $\mathbb{X}_f$ (the feasible set $\mathcal{X}_N$) may be small. As $N$ increases, the feasible set $\mathcal{X}_N$ expands, eventually converging to the Maximal Control Invariant Set $\mathcal{C}_\infty$.The Determinedness Index (denoted as $\bar{H}_p$ or $d$) is formally defined as the smallest horizon length $N$ such that the $N$-step controllable set $\mathcal{X}_N$ is equal to the maximal invariant set $\mathcal{C}_\infty$.
+While terminal constraints guarantee feasibility, they can be conservative. If the prediction horizon $N$ is short, the set of states that can reach the terminal set $\mathbb{X}\_f$ (the feasible set $\mathcal{X}\_N$) may be small. As $N$ increases, the feasible set $\mathcal{X}\_N$ expands, eventually converging to the Maximal Control Invariant Set $\mathcal{C}\_\infty$.The Determinedness Index (denoted as $\bar{H}\_p$ or $d$) is formally defined as the smallest horizon length $N$ such that the $N$-step controllable set $\mathcal{X}\_N$ is equal to the maximal invariant set $\mathcal{C}\_\infty$.
+
 $$
-\bar{H}_p = \min \{ N \in \mathbb{N} \mid \mathcal{K}_N(\mathbb{X}_f) = \mathcal{C}_\infty \}
+\bar{H}\_p = \min \{ N \in \mathbb{N} \mid \mathcal{K}\_N(\mathbb{X}\_f) = \mathcal{C}\_\infty \}
 $$
-The intuition here is analogous to driving a car on a road with obstacles. The determinedness index is the "minimum safe sight distance." If your headlights (horizon) illuminate the road further than the distance required to bring the car to a stop from full speed, extending the headlights further does not increase the set of safe initial states (i.e., you can't drive any faster or start from any more precarious positions). It can be highlighted that this index depends heavily on system dynamics; for a vehicle model, at low velocities, the index might be small (e.g., 2 steps), but it grows as velocity increases. Calculating this index offline helps engineers choose a prediction horizon $N \ge \bar{H}_p$ that maximizes the operating region without wasting computational resources on excessively long horizons.
+
+The intuition here is analogous to driving a car on a road with obstacles. The determinedness index is the "minimum safe sight distance." If your headlights (horizon) illuminate the road further than the distance required to bring the car to a stop from full speed, extending the headlights further does not increase the set of safe initial states (i.e., you can't drive any faster or start from any more precarious positions). It can be highlighted that this index depends heavily on system dynamics; for a vehicle model, at low velocities, the index might be small (e.g., 2 steps), but it grows as velocity increases. Calculating this index offline helps engineers choose a prediction horizon $N \ge \bar{H}\_p$ that maximizes the operating region without wasting computational resources on excessively long horizons.
 ## 3.4 Invalidation via Bilevel Programming
-While constructive proofs guarantee feasibility, it is also useful to determine if a given controller is not recursively feasible. Let's introduce a method using **Farkas' Lemma** and **bilevel programming** to search for "problematic" initial states. This approach poses an optimization problem that actively searches for a state $x_0$ which is initially feasible but leads to an infeasible state $x_1$. 
+While constructive proofs guarantee feasibility, it is also useful to determine if a given controller is not recursively feasible. Let's introduce a method using **Farkas' Lemma** and **bilevel programming** to search for "problematic" initial states. This approach poses an optimization problem that actively searches for a state $x_0$ which is initially feasible but leads to an infeasible state $x\_1$. 
 - **The Search**: Maximize the violation of constraints at step $k+1$ subject to feasibility at step $k$
 - **Certificate**: If the optimal value of this problem is zero (no violation possible), the controller is certified as recursively feasible. If positive, the optimizer returns a specific counter-example state that breaks the controller. This tool is invaluable for validating MPC designs where analytical proofs (like identifying $\mathbb{X}_f$) are difficult to construct explicitly.
 ## 4. Stability Analysis: Lyapunov Theory in MPC
-Stability in MPC is established using Lyapunov stability theory. Unlike linear control, where eigenvalues of the closed-loop matrix $A_{cl}$ dictate stability, MPC results in a nonlinear, time-varying feedback law. We must therefore find a scalar function $V(x)$ that decreases along the closed-loop trajectories. The most profound insight in MPC theory is that the Optimal Value Function $J_N^*(x)$ itself serves as this Lyapunov function.
+Stability in MPC is established using Lyapunov stability theory. Unlike linear control, where eigenvalues of the closed-loop matrix $A\_{cl}$ dictate stability, MPC results in a nonlinear, time-varying feedback law. We must therefore find a scalar function $V(x)$ that decreases along the closed-loop trajectories. The most profound insight in MPC theory is that the Optimal Value Function $J\_N^\*(x)$ itself serves as this Lyapunov function.
 ### 4.1 The Lyapunov Descent Condition
-To prove asymptotic stability, we must show that the optimal cost $J_N^*(x)$ decreases at each time step.
+To prove asymptotic stability, we must show that the optimal cost $J\_N^\*(x)$ decreases at each time step.
+
 $$
-J_N^*(x(k+1)) - J_N^*(x(k)) \le -\ell(x(k), u(k))
+J_N^\*(x(k+1)) - J\_N^\*(x(k)) \le -\ell(x(k), u(k))
 $$
+
 If this inequality holds, summing it over time implies that $\ell(x(k), u(k)) \to 0$, which (given standard observability assumptions on the stage cost) implies $x(k) \to 0$.  
-**Detailed Proof via the Shifted Sequence**: Let $J_N^*(x(k))$ be the cost of the optimal sequence $\mathbf{u}^*$ at time $k$: 
+**Detailed Proof via the Shifted Sequence**: Let $J\_N^\*(x(k))$ be the cost of the optimal sequence $\mathbf{u}^\*$ at time $k$: 
+
 $$
-J_N^*(x(k)) = \ell(x_k, u^*_0) + \ell(x_{k+1}, u^*_1) + \dots + \ell(x_{k+N-1}, u^*_{N-1}) + V_f(x_{k+N})
+J\_N^\*(x(k)) = \ell(x\_k, u^\*\_0) + \ell(x\_{k+1}, u^\*\_1) + \dots + \ell(x\_{k+N-1}, u^\*\_{N-1}) + V\_f(x\_{k+N})
 $$
-(Notation simplified: $x_{k+i}$ implies predicted state).  
-At time $k+1$, we consider the cost of the feasible candidate sequence $\tilde{\mathbf{u}}$ constructed in Section 3.2. Let this cost be $\tilde{J}_N(x(k+1))$. By optimality, the actual optimal cost at $k+1$ must be less than or equal to the candidate cost: $J_N^*(x(k+1)) \le \tilde{J}_N(x(k+1))$.The candidate sequence cost is:
+
+(Notation simplified: $x\_{k+i}$ implies predicted state).  
+At time $k+1$, we consider the cost of the feasible candidate sequence $\tilde{\mathbf{u}}$ constructed in Section 3.2. Let this cost be $\tilde{J}\_N(x(k+1))$. By optimality, the actual optimal cost at $k+1$ must be less than or equal to the candidate cost: $J\_N^\*(x(k+1)) \le \tilde{J}\_N(x(k+1))$.The candidate sequence cost is:
+
 $$
-\tilde{J}_N(x(k+1)) = \ell(x_{k+1}, u^*_1) + \dots + \ell(x_{k+N-1}, u^*_{N-1}) + \ell(x_{k+N}, \kappa_f(x_{k+N})) + V_f(x_{k+N+1})
+\tilde{J}\_N(x(k+1)) = \ell(x\_{k+1}, u^\*\_1) + \dots + \ell(x\_{k+N-1}, u^\*\_{N-1}) + \ell(x\_{k+N}, \kappa\_f(x\_{k+N})) + V\_f(x\_{k+N+1})
 $$
+
 Now, calculate the difference $\Delta J = \tilde{J}_N(x(k+1)) - J_N^*(x(k))$. Most terms in the summation cancel out (the overlapping parts of the trajectory). We are left with:
 $$
 \Delta J = -\ell(x_k, u^*_0) + \underbrace{ V_f(x_{k+N+1}) - V_f(x_{k+N}) + \ell(x_{k+N}, \kappa_f(x_{k+N})) }_{\text{Terminal Terms}}
