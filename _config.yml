@@ -1,4 +1,31 @@
-theme: jekyll-theme-cayman
-title: "I miei Appunti di Ingegneria"
-description: "Formule che finalmente funzionano"
+# _config.yml
+
+title: "Dictar Notes"
+description: "Ciao"
+# Sostituisci con il link al tuo repo
+#url: "https://tuo-username.github.io"
+#baseurl: "/nome-del-tuo-repo"
+
+# TEMA: Usiamo Just the Docs (versione remota, non devi installare nulla)
+remote_theme: just-the-docs/just-the-docs
+
+# CONFIGURAZIONE MARKDOWN
 markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  math_engine: null # Lo disattiviamo qui perché usiamo lo script custom per MathJax 3
+
+# ABILITA I COLORI PER IL CODICE
+color_scheme: dark # opzioni: light, dark, auto
+
+# PLUGINS NECESSARI
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# MENU DI NAVIGAZIONE
+# (Abilita la ricerca interna e i link alle sezioni)
+search_enabled: true
+heading_anchors: true
