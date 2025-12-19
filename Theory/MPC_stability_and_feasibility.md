@@ -133,43 +133,48 @@ $$
 \tilde{J}\_N(x(k+1)) = \ell(x\_{k+1}, u^\*\_1) + \dots + \ell(x\_{k+N-1}, u^\*\_{N-1}) + \ell(x\_{k+N}, \kappa\_f(x\_{k+N})) + V\_f(x\_{k+N+1})
 $$
 
-Now, calculate the difference $\Delta J = \tilde{J}_N(x(k+1)) - J_N^*(x(k))$. Most terms in the summation cancel out (the overlapping parts of the trajectory). We are left with:
+Now, calculate the difference $\Delta J = \tilde{J}\_N(x(k+1)) - J_N^\*(x(k))$. Most terms in the summation cancel out (the overlapping parts of the trajectory). We are left with:
+
 $$
-\Delta J = -\ell(x_k, u^*_0) + \underbrace{ V_f(x_{k+N+1}) - V_f(x_{k+N}) + \ell(x_{k+N}, \kappa_f(x_{k+N})) }_{\text{Terminal Terms}}
+\Delta J = -\ell(x\_k, u^\*\_0) + \underbrace{ V\_f(x\_{k+N+1}) - V\_f(x\_{k+N}) + \ell(x\_{k+N}, \kappa\_f(x\_{k+N})) }\_{\text{Terminal Terms}}
 $$
-The term $-\ell(x_k, u^*_0)$ is the cost "consumed" by taking the first step. The bracketed terms represent the cost "added" by extending the horizon and moving the terminal state.  
-For the Lyapunov condition to hold (i.e., $\Delta J \le -\ell(x_k, u^*_0)$), the bracketed term must be non-positive:
+
+The term $-\ell(x\_k, u^\*\_0)$ is the cost "consumed" by taking the first step. The bracketed terms represent the cost "added" by extending the horizon and moving the terminal state.  
+For the Lyapunov condition to hold (i.e., $\Delta J \le -\ell(x\_k, u^\*\_0)$), the bracketed term must be non-positive:
+
 $$
-V_f(f(x, \kappa_f(x))) - V_f(x) + \ell(x, \kappa_f(x)) \le 0, \quad \forall x \in \mathbb{X}_f
+V\_f(f(x, \kappa\_f(x))) - V\_f(x) + \ell(x, \kappa\_f(x)) \le 0, \quad \forall x \in \mathbb{X}\_f
 $$
-This inequality is the ***Fundamental Stability Condition***. It essentially requires that the terminal cost $V_f(x)$ acts as a Control Lyapunov Function (CLF) for the terminal controller $\kappa_f(x)$ inside the terminal set $\mathbb{X}_f$. It ensures that the cost-to-go decreases faster than the stage cost accumulates in the infinite tail of the trajectory.
-### 4.2 The "Standard" Stability Ingredients
+
+This inequality is the ***Fundamental Stability Condition***. It essentially requires that the terminal cost $V\_f(x)$ acts as a Control Lyapunov Function (CLF) for the terminal controller $\kappa\_f(x)$ inside the terminal set $\mathbb{X}_f$. It ensures that the cost-to-go decreases faster than the stage cost accumulates in the infinite tail of the trajectory.
+
+### 4.2 The "Standard" Stability Ingredients
 Based on the derivation above, a standard stable MPC design requires three "Terminal Ingredients":
-- **Terminal Set** $\mathbb{X}_f$: A positively invariant set under $\kappa_f(x)$.
-- **Terminal Controller** $\kappa_f(x)$: A local feedback law (typically LQR) that stabilizes the system within $\mathbb{X}_f$ while satisfying input constraints
-- **Terminal Cost** $V_f(x)$: A function (typically quadratic $x^TPx$) that satisfies the Lyapunov decrease inequality. Usually, $P$ is the solution to the Algebraic Riccati Equation (ARE) for the unconstrained system, which automatically satisfies the inequality with equality.
+- **Terminal Set** $\mathbb{X}\_f$: A positively invariant set under $\kappa\_f(x)$.
+- **Terminal Controller** $\kappa\_f(x)$: A local feedback law (typically LQR) that stabilizes the system within $\mathbb{X}\_f$ while satisfying input constraints
+- **Terminal Cost** $V\_f(x)$: A function (typically quadratic $x^TPx$) that satisfies the Lyapunov decrease inequality. Usually, $P$ is the solution to the Algebraic Riccati Equation (ARE) for the unconstrained system, which automatically satisfies the inequality with equality.
 ### 4.3 Classification of Stability Approaches
 Different historical and modern MPC formulations satisfy this fundamental condition in different ways
 #### 4.3.1 Terminal Equality Constraint (Kwon & Pearson, 1977)
-This approach, detailed in 1 and 17, forces the state to reach the origin exactly at step $N$: $x(k+N|k) = 0$.
-- **Mechanism**: Here, $\mathbb{X}_f = \{0\}$, $\kappa_f(x) = 0$, and $V_f(x) = 0$.
+This approach forces the state to reach the origin exactly at step $N$: $x(k+N|k) = 0$.
+- **Mechanism**: Here, $\mathbb{X}\_f = \{0\}$, $\kappa\_f(x) = 0$, and $V\_f(x) = 0$.
 - **Proof**: The stability condition becomes $0 - 0 + \ell(0,0) \le 0$, which holds trivially.
 - **Pros**: Theoretically simple; guarantees strong stability.
 - **Cons**: Extremely restrictive. Requiring the state to hit zero in finite time often requires very large inputs, shrinking the feasible set significantly. It makes the optimization problem computationally difficult due to the stringent equality constraint.
 #### 4.3.2 Terminal Set with Terminal Cost (Dual Mode)
 This is the most popular modern formulation (often called "Dual Mode" MPC).
-- **Mechanism**: The MPC steers the state into a neighborhood of the origin ($\mathbb{X}_f$). Once inside, the "virtual" controller switches to a local linear controller (LQR), and the terminal cost $V_f(x)$ captures the infinite cost of this linear phase
+- **Mechanism**: The MPC steers the state into a neighborhood of the origin ($\mathbb{X}\_f$). Once inside, the "virtual" controller switches to a local linear controller (LQR), and the terminal cost $V\_f(x)$ captures the infinite cost of this linear phase
 - **Pros**: Much larger domain of attraction than equality constraints. Shorter horizons can be used because the MPC only needs to get the system "close enough" to the origin, not exactly to it.
 #### 4.3.3 No Terminal Constraints
 Some formulations omit terminal constraints entirely to simplify implementation. Stability is then argued based on "sufficiently long" horizons. 
 - **Intuition (Turnpike Property)**: For very long horizons, the optimal trajectory naturally spends most of its time near the origin to minimize the sum of stage costs. The contribution of the "tail" becomes negligible. 
-- **Contractive Constraints**: An alternative approach, detailed in 17, enforces a "contractive" constraint $\|x(k+1)\| \le \alpha \|x(k)\|$ with $\alpha < 1$. This forces the state norm to decrease at every step, acting as a direct Lyapunov constraint. While robust, this can be overly conservative if the natural optimal path needs to temporarily increase the state norm (e.g., swinging up a pendulum) to achieve long-term minimization.
+- **Contractive Constraints**: An alternative approach enforces a "contractive" constraint $\|x(k+1)\| \le \alpha \|x(k)\|$ with $\alpha < 1$. This forces the state norm to decrease at every step, acting as a direct Lyapunov constraint. While robust, this can be overly conservative if the natural optimal path needs to temporarily increase the state norm (e.g., swinging up a pendulum) to achieve long-term minimization.
 ## 5. Robustness: Handling Uncertainty
 Nominal stability proofs assume a perfect model ($x^+ = f(x,u)$). In reality, systems are subject to disturbances $w(k)$ and modeling errors: $x(k+1) = f(x(k), u(k)) + w(k)$. These uncertainties can break the "shifted sequence" logic, leading to infeasibility or instability.
 ### 5.1 Tube-Based MPC
 Tube MPC is the prevailing method for robust constrained control.
 - **Concept**: The controller maintains a "Nominal System" (a disturbance-free simulation) and forces the real system to stay close to it.
-- **Decomposition**: The control input is split into $u(k) = \bar{u}(k) + K(x(k) - \bar{x}(k))$.$\bar{u}(k)$ is the optimal input for the nominal system $\bar{x}$.$K(x - \bar{x})$ is a fast feedback controller rejecting disturbances to keep the error $e = x - \bar{x}$ inside a bounded set $\mathbb{Z}$ (the "Tube")
+- **Decomposition**: The control input is split into $u(k) = \bar{u}(k) + K(x(k) - \bar{x}(k))$.$\bar{u}(k)$ is the optimal input for the nominal system $\bar{x}$. $K(x - \bar{x})$ is a fast feedback controller rejecting disturbances to keep the error $e = x - \bar{x}$ inside a bounded set $\mathbb{Z}$ (the "Tube")
 - **Constraint Tightening**: The optimizer solves the nominal problem using tightened constraints $\mathbb{X}_{tight} = \mathbb{X} \ominus \mathbb{Z}$ and $\mathbb{U}_{tight} = \mathbb{U} \ominus K\mathbb{Z}$.
 - **Guarantee**: If the nominal trajectory satisfies the tightened constraints, the real trajectory (which is $\bar{x} + e$) is guaranteed to satisfy the original constraints $\mathbb{X}$, preserving recursive feasibility robustly.
 ### 5.2 Min-Max MPC
