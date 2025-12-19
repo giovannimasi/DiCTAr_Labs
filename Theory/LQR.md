@@ -20,13 +20,17 @@ We start our analysis from the continuous time LQR. Let's assume a static state 
 The optimal solution $u(t)$ is given by $u(t) = -Kx(t)$.  
 The optimal gain $K$ is computed using the unique, positive definite solution $P$ to the Algebraic Riccati Equation (ARE).  
 ***Algebraic Riccati Equation (ARE):*** 
+
 $$
 Q - PBR^{-1}B^{T}P^{T} + PA + A^{T}P = 0
 $$  
+
 The **Optimal Gain $K$** is then calculated directly from $P$: 
+
 $$
 K = R^{-1}B^{T}P \in \mathbb{R}^{p,n}
 $$ 
+
 > 💡 **Intuition Check: The Role of P** : The matrix $P$ isn't just an arbitrary variable; it represents the minimum total cost remaining (or "cost-to-go") from the current time to infinity, given the current state $x(t)$. The calculation of $K$ naturally emerges from minimizing this cost.
 ## Existence, Stability, and Structural Prerequisites
 The stability and existence of the LQR solution depend critically on the underlying structural properties of the system matrices.
@@ -46,8 +50,8 @@ $$
 
 **Condition:** The rank of $M_{R}$ must equal the state dimension $n$: $\rho(M_{R}) = n$.  
 ### Observability of the Penalized States
-Asymptotic stability is guaranteed if the pair $(A, C_q)$ is **observable**, where $C_q$ is defined such that $Q = C_{q}^{T}C_{q}$.  
-The **Observability Matrix** ($M_O(A,C_q)$) must have full rank  
+Asymptotic stability is guaranteed if the pair $(A, C\_q)$ is **observable**, where $C_q$ is defined such that $Q = C\_{q}^{T}C\_{q}$.  
+The **Observability Matrix** $M\_O(A,C\_q)$ must have full rank  
 
 $$
 M_{O}(A,C_{q})=\begin{bmatrix}
