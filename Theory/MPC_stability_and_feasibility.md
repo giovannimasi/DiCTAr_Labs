@@ -5,8 +5,6 @@
 > [!WARNING]
 > 1. WIP
 > 2. The following notes are AI-made and include extra material for completeness. Parlo ita che so stanco, se stai leggendo questo vuol dire che non mi sono messo ancora a fixare questa pagina, spero non ci siano cagate e che le info extra che troverai ti possano far piacere. Baci e buon natale
-> 3. latex su github online fa cagare, se vi danno fastidio le formule scritte dimmerda pullate in locale, aprite con vs code e scaricatevi un'estensione per le preview (tempo stimato 3 minuti) 
-
 
 Model Predictive Control (MPC), historically referred to as Receding Horizon Control (RHC), represents a paradigm shift in the regulation of complex dynamical systems. Unlike classical control methodologies—such as Proportional-Integral-Derivative (PID) or Linear Quadratic Regulation (LQR)—which rely on pre-computed, static feedback laws, MPC is predicated on the real-time solution of a constrained Optimal Control Problem (OCP) at every sampling instant.  
  This distinct operational mechanic enables MPC to explicitly account for physical limitations, such as actuator saturation and safety boundaries, which are ubiquitous in industrial processes, automotive systems, and robotics.  
@@ -140,13 +138,13 @@ $$
 $$
 
 The term $-\ell(x\_k, u^\*\_0)$ is the cost "consumed" by taking the first step. The bracketed terms represent the cost "added" by extending the horizon and moving the terminal state.  
-For the Lyapunov condition to hold (i.e., $\Delta J \le -\ell(x\_k, u^\*\_0)$), the bracketed term must be non-positive:
+For the Lyapunov condition to hold (i.e., $$\Delta J \le -\ell (x\_k, u^\*\_0)$$ ), the bracketed term must be non-positive:
 
 $$
 V\_f(f(x, \kappa\_f(x))) - V\_f(x) + \ell(x, \kappa\_f(x)) \le 0, \quad \forall x \in \mathbb{X}\_f
 $$
 
-This inequality is the ***Fundamental Stability Condition***. It essentially requires that the terminal cost $V\_f(x)$ acts as a Control Lyapunov Function (CLF) for the terminal controller $\kappa\_f(x)$ inside the terminal set $\mathbb{X}_f$. It ensures that the cost-to-go decreases faster than the stage cost accumulates in the infinite tail of the trajectory.
+This inequality is the ***Fundamental Stability Condition***. It essentially requires that the terminal cost $V\_f(x)$ acts as a Control Lyapunov Function (CLF) for the terminal controller $\kappa\_f(x)$ inside the terminal set $\mathbb{X}\_f$. It ensures that the cost-to-go decreases faster than the stage cost accumulates in the infinite tail of the trajectory.
 
 ### 4.2 The "Standard" Stability Ingredients
 Based on the derivation above, a standard stable MPC design requires three "Terminal Ingredients":
@@ -170,18 +168,21 @@ Some formulations omit terminal constraints entirely to simplify implementation.
 - **Intuition (Turnpike Property)**: For very long horizons, the optimal trajectory naturally spends most of its time near the origin to minimize the sum of stage costs. The contribution of the "tail" becomes negligible. 
 - **Contractive Constraints**: An alternative approach enforces a "contractive" constraint $\|x(k+1)\| \le \alpha \|x(k)\|$ with $\alpha < 1$. This forces the state norm to decrease at every step, acting as a direct Lyapunov constraint. While robust, this can be overly conservative if the natural optimal path needs to temporarily increase the state norm (e.g., swinging up a pendulum) to achieve long-term minimization.
 ## 5. Robustness: Handling Uncertainty
-Nominal stability proofs assume a perfect model ($x^+ = f(x,u)$). In reality, systems are subject to disturbances $w(k)$ and modeling errors: $x(k+1) = f(x(k), u(k)) + w(k)$. These uncertainties can break the "shifted sequence" logic, leading to infeasibility or instability.
+Nominal stability proofs assume a perfect model ($$x^+ = f(x,u)$$). In reality, systems are subject to disturbances $w(k)$ and modeling errors: $x(k+1) = f(x(k), u(k)) + w(k)$. These uncertainties can break the "shifted sequence" logic, leading to infeasibility or instability.
 ### 5.1 Tube-Based MPC
 Tube MPC is the prevailing method for robust constrained control.
 - **Concept**: The controller maintains a "Nominal System" (a disturbance-free simulation) and forces the real system to stay close to it.
-- **Decomposition**: The control input is split into $u(k) = \bar{u}(k) + K(x(k) - \bar{x}(k))$.$\bar{u}(k)$ is the optimal input for the nominal system $\bar{x}$. $K(x - \bar{x})$ is a fast feedback controller rejecting disturbances to keep the error $e = x - \bar{x}$ inside a bounded set $\mathbb{Z}$ (the "Tube")
-- **Constraint Tightening**: The optimizer solves the nominal problem using tightened constraints $\mathbb{X}_{tight} = \mathbb{X} \ominus \mathbb{Z}$ and $\mathbb{U}_{tight} = \mathbb{U} \ominus K\mathbb{Z}$.
+- **Decomposition**: The control input is split into $u(k) = \bar{u}(k) + K(x(k) - \bar{x}(k))$. $\bar{u}(k)$ is the optimal input for the nominal system $\bar{x}$. $K(x - \bar{x})$ is a fast feedback controller rejecting disturbances to keep the error $e = x - \bar{x}$ inside a bounded set $\mathbb{Z}$ (the "Tube")
+- **Constraint Tightening**: The optimizer solves the nominal problem using tightened constraints $\mathbb{X}\_{tight} = \mathbb{X} \ominus \mathbb{Z}$ and $\mathbb{U}\_{tight} = \mathbb{U} \ominus K\mathbb{Z}$.
 - **Guarantee**: If the nominal trajectory satisfies the tightened constraints, the real trajectory (which is $\bar{x} + e$) is guaranteed to satisfy the original constraints $\mathbb{X}$, preserving recursive feasibility robustly.
-### 5.2 Min-Max MPC
-This approach, mentioned in 2, solves for the worst-case disturbance scenario.
+
+### 5.2 Min-Max MPC
+This approach solves for the worst-case disturbance scenario.
+
 $$
-\min_{\mathbf{u}} \max_{\mathbf{w}} J_N(x, \mathbf{u}, \mathbf{w})
+\min\_{\mathbf{u}} \max\_{\mathbf{w}} J\_N(x, \mathbf{u}, \mathbf{w})
 $$
+
 While theoretically rigorous, Min-Max MPC is computationally heavy because the number of possible disturbance scenarios grows exponentially with the horizon length. It is often overly conservative, optimizing performance for a "perfect storm" of disturbances that rarely occurs.
 ### 5.3 Disturbance Preview and Integrated Designs
 Recent advances address the case where disturbances are not random but predictable (e.g., ocean waves for a ship, road grade for a car).
@@ -192,15 +193,17 @@ Recent advances address the case where disturbances are not random but predictab
 Beyond the core theoretical frameworks, several practical mechanisms are employed to ensure robust operation in industrial settings.
 ### 6.1 Soft Constraints and Exact Penalty Functions
 In practice, disturbances might be larger than the "Tube" design allowance, or the initial state might be outside the feasible set due to an upset. A "Hard Constraint" MPC would become infeasible and crash.**Soft Constraints** relax state constraints using slack variables $\epsilon \ge 0$:
+
 $$
-x_{min} - \epsilon \le x \le x_{max} + \epsilon
+x\_{min} - \epsilon \le x \le x\_{max} + \epsilon
 $$
-The cost function is modified: $J_{soft} = J + \rho \|\epsilon\|$.  
+
+The cost function is modified: $J\_{soft} = J + \rho \|\epsilon\|$.  
 The choice of norm for the penalty $\rho \|\epsilon\|$ is critical for stability:
 - **$L_2$ Norm (Quadratic)**: Adding $\rho \epsilon^2$ is numerically easy (keeps the problem a QP). However, it destroys the exact satisfaction of constraints. The solver will always allow a tiny violation to reduce the primary objective (performance vs. constraint trade-off). This effectively changes the constraint boundary, potentially leading to drift. 
 - **$L_1$ / $L_\infty$ Norm (Exact Penalty)**: Adding $\rho |\epsilon|$ creates a non-smooth cost (or requires converting to linear programming form). However, it possesses the Exact Penalty Property: if a solution exists with $\epsilon=0$, the optimizer will find it. It only uses slack when absolutely physically necessary. This preserves the nominal stability properties and region of attraction while preventing solver failure during large disturbances.
 ### 6.2 Feasibility Governors
-A Feasibility Governor (FG) is an add-on unit described in 11 that sits outside the MPC loop
+A Feasibility Governor (FG) is an add-on unit that sits outside the MPC loop
 - **Problem**: If the user changes the reference setpoint $r$ too abruptly, the target terminal set $\mathbb{X}_f(r)$ might become unreachable in $N$ steps, causing infeasibility.
 - **Solution**: The FG filters the reference command. It computes a "safe" reference $v$ that is as close to $r$ as possible but guarantees that the new terminal set $\mathbb{X}_f(v)$ remains reachable
 - **Benefit**: This decouples the feasibility problem from the tracking problem. The MPC always solves a feasible problem for the intermediate reference $v$, while the FG manages the long-term approach to $r$.
@@ -211,12 +214,14 @@ For open-loop unstable systems, the feasible region can be very small (narrow co
 ## 7. New Frontiers: Economic and Data-Driven MPC
 ### 7.1 Economic MPC and Dissipativity
 Traditional MPC minimizes "distance to setpoint." Economic MPC (EMPC) minimizes a generic economic cost (e.g., energy consumption, profit) that may not be minimal at the steady state.
-- **Stability Challenge**: The standard Lyapunov argument ($J^*$ decreases) fails because the optimal operation might be a limit cycle (orbit) rather than a fixed point, or the cost might not be positive definite.
+- **Stability Challenge**: The standard Lyapunov argument ($J^\*$ decreases) fails because the optimal operation might be a limit cycle (orbit) rather than a fixed point, or the cost might not be positive definite.
 - **Rotated Stage Cost**: Stability is proven using Dissipativity Theory. The stage cost $\ell(x,u)$ is "rotated" using a storage function $\lambda(x)$:
-  $$
-  L(x,u) = \ell(x,u) + \lambda(x) - \lambda(f(x,u))
-  $$
-  If the system is strictly dissipative with respect to the optimal equilibrium, minimizing the raw economic cost is equivalent to minimizing this rotated cost, which is positive definite. This recovers the standard Lyapunov stability proofs for economic objectives.
+
+ $$
+ L(x,u) = \ell(x,u) + \lambda(x) - \lambda(f(x,u))
+ $$
+ 
+If the system is strictly dissipative with respect to the optimal equilibrium, minimizing the raw economic cost is equivalent to minimizing this rotated cost, which is positive definite. This recovers the standard Lyapunov stability proofs for economic objectives.
 ### 7.2 Stability in Hybrid Architectures
 In Hybrid Electric Vehicles (HEVs) and robotics, the system is hybrid (continuous dynamics + discrete modes like gears). 
 - **Challenge**: The discrete switching (e.g., engine On/Off) makes the feasible set non-convex (union of disjoint sets).
@@ -229,9 +234,9 @@ To make these abstract mathematical concepts concrete, we employ the analogy of 
 | **Feasibility** | Existence of $u \in \mathbb{U}$ s.t. $x \in \mathbb{X}$ | The ability to steer and brake to stay on the road without crashing. |
 | **Blind Alley (Infeasibility)**| $x(k)$ feasible $\nRightarrow x(k+1)$ feasible | Driving fast into a fog bank. You are safe now, but by the time you see the cliff edge at step $N+1$, it's too late to stop. |
 | **Feasibility** | Existence of $u \in \mathbb{U}$ s.t. $x \in \mathbb{X}$ | The ability to steer and brake to stay on the road without crashing. |
-| **Terminal Constraint ($\mathbb{X}_f$)** | $x(N) \in \mathbb{X}_{inv}$ | A rule: "You must plan your drive such that at the limit of your vision, the car is slow enough and positioned safely so you could stop indefinitely if needed." 
+| **Terminal Constraint ($\mathbb{X}\_f$)** | $x(N) \in \mathbb{X}\_{inv}$ | A rule: "You must plan your drive such that at the limit of your vision, the car is slow enough and positioned safely so you could stop indefinitely if needed." 
 | **Recursive Feasibility** | Shifted sequence argument | Because you planned to be "safe" at the end of your vision, when you move forward, you just execute that safety maneuver. You never enter a situation where you rely on luck.
-|**Determinedness Index** | Smallest $N$ for $\mathcal{K}_N = \mathcal{C}_\infty$ | The minimal braking distance. Seeing 10km ahead is no safer than seeing 200m ahead if 200m is all you need to stop from top speed. | Soft Constraints | Slack variables $\epsilon$ | Driving on the shoulder. It's technically "off-road" (violation), but permissible in an emergency to avoid a head-on collision (infeasibility).
+|**Determinedness Index** | Smallest $N$ for $\mathcal{K}\_N = \mathcal{C}\_\infty$ | The minimal braking distance. Seeing 10km ahead is no safer than seeing 200m ahead if 200m is all you need to stop from top speed. | Soft Constraints | Slack variables $\epsilon$ | Driving on the shoulder. It's technically "off-road" (violation), but permissible in an emergency to avoid a head-on collision (infeasibility).
 |**Tube MPC** | Tightened constraints | Driving in the *center* of the lane. You leave a margin so that if a gust of wind (disturbance) hits you, you don't drift off the road.
 
 ## 9. Conclusion
@@ -247,21 +252,21 @@ Ultimately, the rigorous design of an MPC controller is an exercise in ensuring 
 ### Table 1: Comparative Analysis of MPC Stability Architectures
 | Architecture | Terminal Constraint | Terminal Cost | Primary Advantage | Primary Disadvantage | 
 |---|---|---|---|---|
-**Zero Terminal Constraint** | None | Quadratic ($P_{LQR}$) | Computational Simplicity | Stability only guaranteed for very large $N$; difficult to tune. | 
+**Zero Terminal Constraint** | None | Quadratic ($P\_{LQR}$) | Computational Simplicity | Stability only guaranteed for very large $N$; difficult to tune. | 
 | **Equality Constraint** | $x(N) = 0$ | None required| Simple theoretical proof | Very small Region of Attraction; requires high control effort | 
-| **Dual Mode (Standard)** | $x(N) \in \mathbb{X}_f$ | $V_f(x)$ (Lyapunov) | Best balance of feasibility and stability | Requires computation of invariant sets ($\mathbb{X}_f$) offline | 
-| **Contractive MPC** | $\|x_{k+1}\| \le \alpha \|x$ | Standard | Robust stability without terminal sets | Can be overly conservative; may prevent complex maneuvers | 
-| **Tube MPC** | $x(N) \in \mathbb{X}_f$ (Tightened)|Standard | Robustness to bounded disturbances | Reduces feasible workspace due to margins (conservatism)
+| **Dual Mode (Standard)** | $x(N) \in \mathbb{X}_f$ | $V\_f(x)$ (Lyapunov) | Best balance of feasibility and stability | Requires computation of invariant sets ($\mathbb{X}\_f$) offline | 
+| **Contractive MPC** | $\|x\_{k+1}\| \le \alpha \|x$ | Standard | Robust stability without terminal sets | Can be overly conservative; may prevent complex maneuvers | 
+| **Tube MPC** | $x(N) \in \mathbb{X}\_f$ (Tightened)|Standard | Robustness to bounded disturbances | Reduces feasible workspace due to margins (conservatism)
 
 
 
 ### Table 2: Key Mathematical Definitions and Their Significance
 | Term | Definition | Role in MPC Theory |
 |---|---|---|
-| **Recursive Feasibility** | $x_k \in \mathcal{X}_N \implies x_{k+1} \in \mathcal{X}_N$ | Ensures the controller never encounters an unsolvable problem in the future
+| **Recursive Feasibility** | $x\_k \in \mathcal{X}\_N \implies x\_{k+1} \in \mathcal{X}\_N$ | Ensures the controller never encounters an unsolvable problem in the future
 | **Control Invariant Set** | $\forall x \in \Omega, \exists u: f(x,u) \in \Omega$ | The mathematical definition of a "Safe Harbor" for terminal constraints 
 | **CLF (Control Lyapunov Function)** | $V(f(x,u)) - V(x) < 0$ | The condition the Terminal Cost must satisfy to ensure the "tail" cost decreases 
-| **Determinedness Index** | Min $N$ s.t. $\mathcal{K}_N = \mathcal{O}_\infty$ | The theoretical lower bound for the horizon length to maximize the controllable region
-|**Exact Penalty Function** | $L_1$ norm on slack variables | Allows soft constraints that do not distort the trajectory when strictly feasible
+| **Determinedness Index** | Min $N$ s.t. $\mathcal{K}\_N = \mathcal{O}\_\infty$ | The theoretical lower bound for the horizon length to maximize the controllable region
+|**Exact Penalty Function** | $L\_1$ norm on slack variables | Allows soft constraints that do not distort the trajectory when strictly feasible
 
 
