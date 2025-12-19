@@ -35,16 +35,28 @@ However, an increase of the closed loop dominant time constant may cause a degra
 ### Analytic formulation without constraints (see ex1 in matlab) 
 We need both discrete time approach and optimal control, since in discrete time we can handle the situation in **discrete time instant** (easier than in continuous time).  
 Let's consider discrete time, finite horizon, linear quadratic optimal control.   
-- first of all, we consider the solution in the absence of input constraints  
-- The discrete LTI system dynamics are represented by $x(k+1) = A x(k) + B u(k)$.  
-  min_U(k) J(x(k), U(k)) = min_U(k) [∑_(i=0)^(H_p-1) xᵀ(k+i)Qx(k+i) + uᵀ(k+i)Ru(k+i) 
-                         + xᵀ(k+H_p)Sx(k+H_p)]
+First of all, we consider the solution in the absence of input constraints.   
+For an LTI discrete-time dynamical systems described by the state equation
 
-  U(k) = [u(k) u(k+1) ... u(k+H_p-1)]
+$$
+x(k+1) = A x(k) + B u(k) 
+$$
 
-  $H_p \to$ time prediction horizon
-- In discrete time, the unconstrained optimal solution $U^*(k)$ can be easily computed through a finite dimensional quadratic optimization problem (slides L08_15-21)
-- let's consider $H_p = 3$ &rarr; our aim is to compute the sequence $U(k) = [u(k) \\ \\ u(k+1) \\ \\ u(k+2)]$ &rarr; we express the function as a function of $U(k)$ and the initial state $x(k)$
+At the generic time instant $k$, the finite horizon (Linear Quadratic) optimal control is formulated as
+
+$$
+\min_{U(k)} J(x(k), U(k)) = \min_{U(k)} \left[ \sum_{i=0}^{H_p-1} \left( x(k+i)^\top Q x(k+i) + u(k+i)^\top R u(k+i) \right) + x(k+H_p)^\top S x(k+H_p) \right]
+$$
+
+Let's define
+
+$$
+U(k) = \begin{bmatrix} u(k) & u(k+1) & \dots & u(k+H_p-1) \end{bmatrix}
+$$
+
+with $H_p \to$ time prediction horizon  
+In discrete time, the unconstrained optimal solution $U^\*(k)$ can be easily computed through a finite dimensional quadratic optimization problem (slides L08_15-21).
+Let's consider $H_p = 3$ &rarr; our aim is to compute the sequence $U(k) = [u(k) \\ \\ u(k+1) \\ \\ u(k+2)]$ &rarr; we express the function as a function of $U(k)$ and the initial state $x(k)$
 > [!WARNING]
 > The computation of the cost function is omitted, see slides
 > 
@@ -175,7 +187,7 @@ $$
 Now we can optimize the quadratic function in the presence of linear constraints (_quadratic programming_). In order to do this, we use Matlab function `quadprog()` that computes optimal input $U^*(k)$.
 
 >[!NOTE]
-> We don't care about how does it work, we just need to define our matrices and our constraints. Matlab does the remaining part of the job. However, if you are really intersted in what Matlab does, check this: [Matlab-quadprog-docs](https://it.mathworks.com/help/optim/ug/quadprog.html) & 
+> We don't care about how does it work, we just need to define our matrices and our constraints. Matlab does the remaining part of the job. However, if you are really interested in what Matlab does, check this: [Matlab-quadprog-docs](https://it.mathworks.com/help/optim/ug/quadprog.html) 
 
 >[!CAUTION]
 > $U^*(k)$ can be applied over the time horizon of length $H_p$ in open loop without any feedback.
@@ -192,7 +204,7 @@ At sample instant k:
 - k&larr; k + 1 and repeat the procedure
 
 > [!NOTE]
-> If the model and the cost function are time invariant, the RH principle implicitly defines a nonlinear time invariant static state feedback control law of the form  $u(k) = \mathcal{K} (x(k))$. However, the analytic expression of $mathcal{K} (x(k)) $ **can't be computed**.
+> If the model and the cost function are time invariant, the RH principle implicitly defines a nonlinear time invariant static state feedback control law of the form  $u(k) = \mathcal{K} (x(k))$. However, the analytic expression of $\mathcal{K} (x(k))$ **can't be computed**.
 > It is possible to use RH principle also in finite horizon LQ unconstrained control, in order to obtain a feedback controller
 
 
