@@ -34,18 +34,18 @@ Unlike other controllers, MPC explicitly considers physical limitations during t
 * **State Constraints:** e.g., $x_{min} \le x(k) \le x_{max}$. This ensures safety (e.g., keeping temperature below a critical limit).
 
 ### Step 5: The "Receding Horizon" Action
-Once the optimal sequence $U^*$ is found, the controller applies **only the first element** $u(k) = u^*(k|k)$ to the real system.
+Once the optimal sequence $U^\*$ is found, the controller applies **only the first element** $u(k) = u^\*(k|k)$ to the real system.
 The rest of the computed sequence is discarded. At the next time step ($k+1$), the entire process starts over with fresh measurements. This feedback loop allows the controller to correct for model inaccuracies and external disturbances.
 
 ## 3. Advanced Mechanics: Managing Complexity
 
-### Prediction Horizon ($H_p$) vs. Control Horizon ($H_c$)
+### Prediction Horizon ($H\_p$) vs. Control Horizon ($H\_c$)
 Calculating a unique control input for every step of a long prediction horizon can be computationally expensive (we'll have more degrees of freedom $\Rightarrow$ more complex). To solve this, MPC separates the horizons:
-* **Prediction Horizon ($H_p$):** How far we "see" into the future.
-* **Control Horizon ($H_c$):** The number of steps we are allowed to *change* the control input, where typically $H_c \le H_p$.
+* **Prediction Horizon ($H\_p$):** How far we "see" into the future.
+* **Control Horizon ($H\_c$):** The number of steps we are allowed to *change* the control input, where typically $H\_c \le H\_p$.
 
 **The Strategy:**
-After the first $H_c$ steps, the control signal is often held constant or forced to follow a specific law for the remainder of the prediction window ($H_p - H_c$). This reduces the degrees of freedom in the optimization, making the calculation faster without significantly hurting performance.
+After the first $H\_c$ steps, the control signal is often held constant or forced to follow a specific law for the remainder of the prediction window ($H\_p - H\_c$). This reduces the degrees of freedom in the optimization, making the calculation faster without significantly hurting performance.
 
 [### What are the possible solutions?
 One possible solution is to "see more than what we optimize". What does it mean? We predict system behaviour over the finite horizon $H_p$, but we optimize only the first
@@ -57,7 +57,7 @@ Last one is useful is we have system delays or "inverse response". In this case,
 We can include output tracking, by adding in the cost function a quadratic term of the form  
 
 $$
-(y(k+i \mid k)-r(i))^T \ Q_y \ (y(k+i \mid k) - r(i))
+(y(k+i \mid k)-r(i))^T \ Q\_y \ (y(k+i \mid k) - r(i))
 $$
 
 as we can see, this quadratic term depends on the quantity $(y-r)$.
@@ -65,17 +65,24 @@ as we can see, this quadratic term depends on the quantity $(y-r)$.
 > Output constraints can be included too! These constraints are translated in linear inequalities in $U(k)$, similar to what we saw for $u$ and $x$ constraints
 
 ### Handling steady-state tracking error
-A standard state-space MPC regulates states to zero. To track a non-zero reference $r(k)$ **without steady-state tracking error** (i.e. $e_r^\infty = 0$), we must introduce **Integral Action**.  
+A standard state-space MPC regulates states to zero. To track a non-zero reference $r(k)$ **without steady-state tracking error** (i.e. $e\_r^\infty = 0$), we must introduce **Integral Action**.  
 
 In MPC, this is done by changing the optimization variable from the absolute input $u(k)$ to the **input increment** $\Delta u(k)$:
-$$\Delta u(k) = u(k) - u(k-1)$$
+
+$$
+\Delta u(k) = u(k) - u(k-1)
+$$
 
 ### Why does this work?
-1.  **Mathematical Integrator:** By using $\Delta u$, we effectively insert a discrete-time integrator $\frac{z}{z-1}$ into the control loop. In fact, in z domain, we have $
-U(z) = \frac{z}{z-1}\Delta U(z)$
+1.  **Mathematical Integrator:** By using $\Delta u$, we effectively insert a discrete-time integrator $\frac{z}{z-1}$ into the control loop. In fact, in z domain, we have $U(z) = \frac{z}{z-1}\Delta U(z)$
 and this is a discrete time integrator.  
-2.  **Augmented State:** The system model is "augmented" (expanded) to include the previous input as part of the state vector:
-    $$\begin{bmatrix} x(k+1) \\ u(k) \end{bmatrix} = \begin{bmatrix} A & B \\ 0 & I \end{bmatrix} \begin{bmatrix} x(k) \\ u(k-1) \end{bmatrix} + \begin{bmatrix} B \\ I \end{bmatrix} \Delta u(k)$$
+2.  **Augmented State:** The system model is "augmented" (expanded) to include the previous input as part of the state vector:  
+
+$$
+\begin{bmatrix} x(k+1) \\\\ u(k) \end{bmatrix} = \begin{bmatrix} A & B \\\\ 0 & I \end{bmatrix} \begin{bmatrix} x(k) \\\\ u(k-1) \end{bmatrix} + \begin{bmatrix} B \\\\ I \end{bmatrix} \Delta u(k)
+$$
+
+    
 >[!NOTE]
 > The second equation comes from $u(k) = u(k-1) + \Delta u(k)$ (basically it's just the input increment $\Delta u(k)$ equation expliciting $u(k)$.)
 > 
