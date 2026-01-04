@@ -6,6 +6,9 @@ title: Indice Automatico
 # Tutti gli Appunti
 
 <ul>
+  <li>
+    <a href="https://giovannimasi.github.io/DiCTAr_Labs/Giovanni/TabellaArgomenti"> Tabella Argomenti (generata da ChatGPT) </a>
+  </li>
   {% for page in site.html_pages %}
     {% if page.url != "/" and page.url != "/404.html" and page.path contains 'Davide/Theory' %}
       <li>
