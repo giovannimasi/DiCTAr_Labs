@@ -87,7 +87,7 @@ plot(r.time, r.data, 'r--');
 hold on
 plot(y.time, y.data, 'LineWidth', 1.5);
 
-norm(y.data(end) - r.data(end), inf)
+e_inf = y.data(end) - r.data(end)
 
 clear out
 
