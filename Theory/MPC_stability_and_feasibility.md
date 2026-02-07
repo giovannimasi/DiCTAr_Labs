@@ -4,7 +4,7 @@
 
 > [!WARNING]
 > 1. WIP
-> 2. The following notes are AI-made and include extra material for completeness. Parlo ita che so stanco, se stai leggendo questo vuol dire che non mi sono messo ancora a fixare questa pagina, spero non ci siano cagate e che le info extra che troverai ti possano far piacere. Baci e buon natale
+> 2. The following notes are AI-made and include extra material for completeness. Se stai leggendo questo vuol dire che non mi sono messo ancora a fixare questa pagina, spero non ci siano cagate e che le info extra che troverai ti possano far piacere. Baci
 
 Model Predictive Control (MPC), historically referred to as Receding Horizon Control (RHC), represents a paradigm shift in the regulation of complex dynamical systems. Unlike classical control methodologies—such as Proportional-Integral-Derivative (PID) or Linear Quadratic Regulation (LQR)—which rely on pre-computed, static feedback laws, MPC is predicated on the real-time solution of a constrained Optimal Control Problem (OCP) at every sampling instant.  
  This distinct operational mechanic enables MPC to explicitly account for physical limitations, such as actuator saturation and safety boundaries, which are ubiquitous in industrial processes, automotive systems, and robotics.  
