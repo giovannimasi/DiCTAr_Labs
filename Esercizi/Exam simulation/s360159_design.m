@@ -45,8 +45,8 @@ deg_S1=l+deg_A_minus-1+nadd;
 deg_R1=deg_A1-deg_B_plus+l1-1+nadd;
 deg_Am=l+deg_A1+deg_A_minus+l1-deg_B_plus-1+nadd;
 
-A_dioph=conv(A_minus, [1 -1]);
-B_dioph=B_minus;
+A_dioph=conv(A_minus, [1 -1])
+B_dioph=B_minus
 
 p1c=-zeta*wn+1j*wn*sqrt(1-zeta^2);
 p1=exp(p1c*Ts);
