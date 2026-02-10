@@ -1,4 +1,4 @@
-clearvars; close all; clc;
+    clearvars; close all; clc;
 
 %% Problem 1 - stability, response computation, steady state analysis of discrete time 1dof control system
 Ts=1;
