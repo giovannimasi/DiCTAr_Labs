@@ -17,7 +17,7 @@ l1=1; l=3; l2=l-l1;
 s_hat=0.05;
 ts_1=1.2;
 
-zeta=abs(log(s_hat))/sqrt(pi^2+log(s_hat)^2);
+zeta=abs(log(s_hat))/sqrt(pi^2+log(s_hat)^2)*1.449
 wn=4.6/(zeta*ts_1);
 
 %% pzmap
@@ -74,7 +74,7 @@ W=minreal(zpk(C*G/(1+C*G)))
 
 %% Simulation
 
-t_sim=5;
+t_sim=3;
 
 delta_r=1;
 delta_d1=0;
