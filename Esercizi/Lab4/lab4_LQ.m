@@ -52,8 +52,8 @@ Cq=chol(Q);
 Mo=obsv(Aaug,Cq); rho_o=rank(Mo)
 
 K=dlqr(Aaug,Baug,Q,R)
-Kq=K(1);
-Kx=K(2:3);
+Kq=K(1)
+Kx=K(2:3)
 
 % Simulation
 
