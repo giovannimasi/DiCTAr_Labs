@@ -47,7 +47,7 @@ clc
 
 % E(z) = W2(z)*R(z) - W1(z)*D1(z)
 
-% see exercise
+% computation by hand
 
 z = tf('z',1);
 
@@ -82,6 +82,6 @@ z = tf('z', 1);
 
 X = zpk(minreal(z*inv(z*eye(length(A))-A)*x0, 1e-3))
 
-% then I can antitransform -> goodnotes
+% then I can antitransform -> computation by hand
 
 zI_A_1 = zpk(minreal(z*inv(z*eye(length(A))-A), 1e-3))

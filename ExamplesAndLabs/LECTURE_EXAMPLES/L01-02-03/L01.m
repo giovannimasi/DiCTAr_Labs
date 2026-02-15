@@ -42,7 +42,7 @@ X_i = minreal(zpk(z*inv(z*eye(2)-A)*x0), 1e-3)
 [num1, den1] = tfdata(X_i(1), 'v'); % 1st component of the state
 
 % in continuous time we use residue, here we use residuez because we are
-% working in the z domain => the trick of extra z is already computed by
+% working in the z domain => the trick of divide/multiply by z is already computed by
 % Matlab
 % it is possible that function can be not stricly proper (same degree
 % num/den), but PFE works only on stricly proper transfer functions

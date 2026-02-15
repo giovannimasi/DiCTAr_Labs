@@ -1,5 +1,5 @@
 # How to navigate these folders
-19 December 2025
+
 
 The folders structure is set up for my personal convenience ;)   
 
@@ -10,7 +10,8 @@ the code (prob never), so you might need to
 tweak things manually. It's not a maze though, I'm sure you 
 guys can figure it out.
 
-Moreover, you'll maybe find errors / different data / results. Just don't try to fix your codes in function of mine; mistakes can occur.
+Moreover, you'll maybe find errors / different data / results. Just don't try to fix your codes in function of mine; mistakes can occur 
+or simply I could edit just for the meme some ex.
 
 Hope you'd read it before starting navigate and running scripts.
 
