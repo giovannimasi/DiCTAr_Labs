@@ -9,14 +9,13 @@ This repository contains a collection of materials I developed during the course
 
 - Lecture examples 
 - Laboratories
-- Some theory
+- Bit of theory
 - Bit of exam preparation
 
 The goal of this project is to provide a helpful reference for fellow students tackling this subject.
 
 > [!WARNING]
-> **Disclaimer**: while I have put significant effort into these files, please note that they 
-are not perfect. Errors may occur, and this repository should not be considered
+> **Disclaimer**: while I have put some effort into this repo, please note that it is not perfect. Errors may occur, and this repository should not be considered
  a definitive guide for the theoretical aspects of the Dictar course. I recommend 
 using these materials primarily to integrate and verify your own exercises and labs.
 
